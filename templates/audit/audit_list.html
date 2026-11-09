@@ -4,7 +4,7 @@
 <div class="page-head">
   <div class="eyebrow">Governance</div>
   <h1>Audit logs</h1>
-  <p>Append-only history of sign-ins and administrative actions. Records cannot be edited or deleted through the application.</p>
+  <p>Append-only history of sign-ins, scans, evidence, network imports, cases, reports and administrative actions. Records cannot be edited or deleted through the application. {{ matched }} of {{ total }} event(s) match.</p>
 </div>
 <section class="panel">
   <form class="toolbar" method="get">
@@ -16,11 +16,26 @@
       </select>
     </div>
     <div class="field">
+      <label for="f-actor">Actor</label>
+      <select class="ee-select" id="f-actor" name="actor">
+        <option value="">Anyone</option>
+        {% for a in actors %}<option value="{{ a }}"{% if a == f.actor %} selected{% endif %}>{{ a }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="field"><label for="f-from">From</label><input class="ee-input" id="f-from" type="date" name="from" value="{{ f.from }}"></div>
+    <div class="field"><label for="f-to">To</label><input class="ee-input" id="f-to" type="date" name="to" value="{{ f.to }}"></div>
+    <div class="field">
       <label for="f-q">Search</label>
       <input class="ee-input" id="f-q" name="q" value="{{ query }}" placeholder="actor, target or detail">
     </div>
     <button class="btn-ee" type="submit">Filter</button>
   </form>
+  <div class="dl-row" style="margin-bottom:14px">
+    <a class="btn-ee small" href="{% url 'audit:export' 'csv' %}?{{ pager_query }}">Export CSV</a>
+    <a class="btn-ee small" href="{% url 'audit:export' 'json' %}?{{ pager_query }}">Export JSON</a>
+    <a class="btn-ee small" href="{% url 'reports:home' %}">Audit report</a>
+    {% if top_24h %}<span class="muted mono">last 24h: {% for a, n in top_24h %}{{ a }} ×{{ n }}{% if not forloop.last %}, {% endif %}{% endfor %}</span>{% endif %}
+  </div>
   {% if page %}
   <div class="table-wrap">
     <table class="ee-table">

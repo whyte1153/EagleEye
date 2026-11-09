@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}{{ case.case_id }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Investigation case</div>
+  <h1><span class="mono">{{ case.case_id }}</span> — {{ case.title }}</h1>
+  <p>{% if case.status == 'closed' %}<span class="badge-ee muted">Closed</span>{% elif case.status == 'on_hold' %}<span class="badge-ee planned">On hold</span>{% elif case.status == 'in_progress' %}<span class="badge-ee ready">In progress</span>{% else %}<span class="badge-ee role">Open</span>{% endif %}
+    · priority <b>{{ case.get_priority_display }}</b> · assigned to <b>{{ case.assigned_to.get_username|default:"nobody" }}</b></p>
+</div>
+<div class="dl-row" style="margin-bottom:18px">
+  <a class="btn-ee small" href="{% url 'cases:report' case.case_id 'html' %}">Report HTML (printable)</a>
+  <a class="btn-ee small" href="{% url 'cases:report' case.case_id 'pdf' %}">PDF</a>
+  <a class="btn-ee small" href="{% url 'cases:report' case.case_id 'json' %}">JSON</a>
+  {% if can_modify and not case.is_closed %}<a class="btn-ee small" href="{% url 'cases:edit' case.case_id %}">Edit</a>{% endif %}
+</div>
+
+<section class="grid two">
+  <div style="display:grid;gap:18px;align-content:start">
+    <div class="panel">
+      <div class="panel-head"><h2>Description</h2></div>
+      <p style="margin:0;white-space:pre-wrap;overflow-wrap:anywhere">{{ case.description|default:"No description." }}</p>
+      {% if case.closure_note %}<hr><div class="eyebrow">Closing note</div><p style="white-space:pre-wrap;overflow-wrap:anywhere">{{ case.closure_note }}</p>{% endif %}
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>Linked scans</h2></div>
+      {% include "cases/_linked_table.html" with rows=items.scans kind="scan" %}
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Linked evidence</h2></div>
+      {% include "cases/_linked_table.html" with rows=items.evidence kind="evidence" %}
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Linked network imports</h2></div>
+      {% include "cases/_linked_table.html" with rows=items.network kind="network" %}
+    </div>
+
+    {% if suggest.evidence or suggest.network %}
+    <div class="panel">
+      <div class="panel-head"><h2>Suggested links</h2></div>
+      <p class="help">These items name <span class="mono">{{ case.case_id }}</span> as their case reference but are not linked yet.</p>
+      {% for e in suggest.evidence %}
+        <form method="post" action="{% url 'cases:link' case.case_id %}" style="margin-bottom:6px">{% csrf_token %}<input type="hidden" name="kind" value="evidence"><input type="hidden" name="ref" value="{{ e.evidence_id }}">
+        {{ e.evidence_id }} {{ e.original_filename }} <button class="btn-ee small" type="submit">Link</button></form>
+      {% endfor %}
+      {% for n in suggest.network %}
+        <form method="post" action="{% url 'cases:link' case.case_id %}" style="margin-bottom:6px">{% csrf_token %}<input type="hidden" name="kind" value="network"><input type="hidden" name="ref" value="{{ n.import_id }}">
+        {{ n.import_id }} {{ n.original_filename }} <button class="btn-ee small" type="submit">Link</button></form>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if removed_links %}
+    <div class="panel">
+      <div class="panel-head"><h2>Unlinked (kept for the record)</h2></div>
+      <ul class="feed">{% for l in removed_links %}<li><time>{{ l.removed_at|date:"Y-m-d H:i" }}</time><span>{{ l.label }}</span></li>{% endfor %}</ul>
+    </div>
+    {% endif %}
+  </div>
+
+  <div style="display:grid;gap:18px;align-content:start">
+    {% if can_modify %}
+    <div class="panel">
+      <div class="panel-head"><h2>Status</h2></div>
+      <form method="post" action="{% url 'cases:status' case.case_id %}">
+        {% csrf_token %}
+        <div class="field"><label for="{{ status_form.status.id_for_label }}">{{ status_form.status.label }}</label>{{ status_form.status }}</div>
+        <div class="field"><label for="{{ status_form.note.id_for_label }}">{{ status_form.note.label }}</label>{{ status_form.note }}</div>
+        <button class="btn-ee solid" type="submit">Update status</button>
+      </form>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Add a note</h2></div>
+      <form method="post" action="{% url 'cases:note' case.case_id %}">
+        {% csrf_token %}
+        <div class="field">{{ note_form.text }}</div>
+        <button class="btn-ee" type="submit">Add note</button>
+      </form>
+    </div>
+    {% if cand %}
+    <div class="panel">
+      <div class="panel-head"><h2>Link an item</h2></div>
+      <form method="post" action="{% url 'cases:link' case.case_id %}">{% csrf_token %}<input type="hidden" name="kind" value="scan">
+        <div class="field"><label for="l-scan">Scan</label><select class="ee-select" id="l-scan" name="ref">{% for s in cand.scans %}<option value="{{ s.pk }}">#{{ s.pk }} {{ s.host }} ({{ s.get_status_display }})</option>{% empty %}<option value="">No scans available</option>{% endfor %}</select></div>
+        <button class="btn-ee small" type="submit">Link scan</button></form>
+      <hr>
+      <form method="post" action="{% url 'cases:link' case.case_id %}">{% csrf_token %}<input type="hidden" name="kind" value="evidence">
+        <div class="field"><label for="l-ev">Evidence</label><select class="ee-select" id="l-ev" name="ref">{% for e in cand.evidence %}<option value="{{ e.evidence_id }}">{{ e.evidence_id }} {{ e.original_filename }}</option>{% empty %}<option value="">No evidence available</option>{% endfor %}</select></div>
+        <button class="btn-ee small" type="submit">Link evidence</button></form>
+      <hr>
+      <form method="post" action="{% url 'cases:link' case.case_id %}">{% csrf_token %}<input type="hidden" name="kind" value="network">
+        <div class="field"><label for="l-ni">Network import</label><select class="ee-select" id="l-ni" name="ref">{% for n in cand.network %}<option value="{{ n.import_id }}">{{ n.import_id }} {{ n.original_filename }}</option>{% empty %}<option value="">No imports available</option>{% endfor %}</select></div>
+        <button class="btn-ee small" type="submit">Link import</button></form>
+    </div>
+    {% endif %}
+    {% endif %}
+  </div>
+</section>
+
+<section class="panel" style="margin-top:18px">
+  <div class="panel-head"><h2>Timeline</h2><span class="mono muted">append-only</span></div>
+  <ul class="feed">
+  {% for ev in events %}
+    <li><time datetime="{{ ev.created_at.isoformat }}">{{ ev.created_at|date:"Y-m-d H:i" }}</time>
+      <span><code>{{ ev.kind }}</code> <b>{{ ev.actor_name|default:"system" }}</b>{% if ev.detail %} — <span style="white-space:pre-wrap;overflow-wrap:anywhere">{{ ev.detail }}</span>{% endif %}</span></li>
+  {% endfor %}
+  </ul>
+</section>
+{% endblock %}

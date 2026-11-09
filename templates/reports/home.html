@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Report &amp; Govern</div>
+  <h1>Reports</h1>
+  <p>Every report is generated from saved records at the moment you download it. Nothing is simulated. HTML reports are print-friendly (use your browser’s Print → Save as PDF for a styled copy).</p>
+</div>
+
+<section class="grid two">
+  <div class="panel">
+    <div class="panel-head"><h2>Security overview</h2></div>
+    <p class="help">Targets and latest findings, evidence integrity, network imports and open cases in one summary.</p>
+    <div class="dl-row">
+      <a class="btn-ee small solid" href="{% url 'reports:overview' 'html' %}">HTML</a>
+      <a class="btn-ee small" href="{% url 'reports:overview' 'pdf' %}">PDF</a>
+      <a class="btn-ee small" href="{% url 'reports:overview' 'json' %}">JSON</a>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h2>Evidence integrity</h2></div>
+    <p class="help">{{ evidence_total }} item(s) in the vault. Re-verification and per-item custody reports live in the vault.</p>
+    <div class="dl-row">
+      <a class="btn-ee small solid" href="{% url 'forensics:integrity_report' 'html' %}">HTML</a>
+      <a class="btn-ee small" href="{% url 'forensics:integrity_report' 'pdf' %}">PDF</a>
+      <a class="btn-ee small" href="{% url 'forensics:integrity_report' 'json' %}">JSON</a>
+      <a class="btn-ee small" href="{% url 'forensics:vault' %}">Open vault</a>
+    </div>
+  </div>
+</section>
+
+<section class="panel" style="margin-top:18px">
+  <div class="panel-head"><h2>Case reports</h2><a class="btn-ee small" href="{% url 'cases:list' %}">All cases</a></div>
+  {% if cases %}
+  <div class="table-wrap"><table class="ee-table"><thead><tr><th>Case</th><th>Title</th><th>Status</th><th>Download</th></tr></thead><tbody>
+  {% for c in cases %}<tr><td class="mono"><a href="{{ c.get_absolute_url }}">{{ c.case_id }}</a></td><td style="overflow-wrap:anywhere">{{ c.title }}</td><td>{{ c.get_status_display }}</td>
+    <td class="dl-row"><a class="btn-ee small" href="{% url 'cases:report' c.case_id 'html' %}">HTML</a> <a class="btn-ee small" href="{% url 'cases:report' c.case_id 'pdf' %}">PDF</a> <a class="btn-ee small" href="{% url 'cases:report' c.case_id 'json' %}">JSON</a></td></tr>{% endfor %}
+  </tbody></table></div>
+  {% else %}<div class="empty"><b>No cases yet</b>Create a case to generate a case report.</div>{% endif %}
+</section>
+
+<section class="panel" style="margin-top:18px">
+  <div class="panel-head"><h2>Scan reports</h2><a class="btn-ee small" href="{% url 'scanner:history' %}">Scan history</a></div>
+  {% if scans %}
+  <div class="table-wrap"><table class="ee-table"><thead><tr><th>Scan</th><th>Target</th><th>Result</th><th>Download</th></tr></thead><tbody>
+  {% for s in scans %}<tr><td class="mono"><a href="{{ s.get_absolute_url }}">#{{ s.pk }}</a></td><td style="overflow-wrap:anywhere">{{ s.normalized_url|default:s.target_url }}</td><td>{{ s.get_status_display }} · {{ s.findings_count }} finding(s)</td>
+    <td class="dl-row"><a class="btn-ee small" href="{% url 'scanner:report' s.pk 'html' %}">HTML</a> <a class="btn-ee small" href="{% url 'scanner:report' s.pk 'pdf' %}">PDF</a> <a class="btn-ee small" href="{% url 'scanner:report' s.pk 'json' %}">JSON</a></td></tr>{% endfor %}
+  </tbody></table></div>
+  {% else %}<div class="empty"><b>No scans yet</b>Run an assessment to generate a scan report.</div>{% endif %}
+</section>
+
+<section class="panel" style="margin-top:18px">
+  <div class="panel-head"><h2>Network imports</h2><a class="btn-ee small" href="{% url 'network_analysis:imports' %}">All imports</a></div>
+  {% if imports %}
+  <div class="table-wrap"><table class="ee-table"><thead><tr><th>Import</th><th>File</th><th>Download</th></tr></thead><tbody>
+  {% for n in imports %}<tr><td class="mono"><a href="{{ n.get_absolute_url }}">{{ n.import_id }}</a></td><td style="overflow-wrap:anywhere">{{ n.original_filename }}</td>
+    <td class="dl-row"><a class="btn-ee small" href="{% url 'network_analysis:export' n.import_id 'csv' %}">CSV</a> <a class="btn-ee small" href="{% url 'network_analysis:export' n.import_id 'json' %}">JSON</a></td></tr>{% endfor %}
+  </tbody></table></div>
+  {% else %}<div class="empty"><b>No imports yet</b>Import Nmap XML or PCAP files in Network analysis.</div>{% endif %}
+</section>
+
+{% if is_admin %}
+<section class="panel" style="margin-top:18px">
+  <div class="panel-head"><h2>Audit report (administrators)</h2></div>
+  <form class="toolbar" method="get" action="{% url 'reports:audit' 'html' %}">
+    <div class="field"><label for="a-from">From</label><input class="ee-input" id="a-from" type="date" name="from"></div>
+    <div class="field"><label for="a-to">To</label><input class="ee-input" id="a-to" type="date" name="to"></div>
+    <button class="btn-ee solid" type="submit">HTML</button>
+  </form>
+  <div class="dl-row"><a class="btn-ee small" href="{% url 'reports:audit' 'pdf' %}">All time PDF</a> <a class="btn-ee small" href="{% url 'reports:audit' 'json' %}">All time JSON</a></div>
+</section>
+{% endif %}
+{% endblock %}

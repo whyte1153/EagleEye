@@ -6,4 +6,5 @@ app_name = "audit"
 
 urlpatterns = [
     path("", views.audit_list, name="list"),
+    path("export.<str:fmt>", views.audit_export, name="export"),
 ]

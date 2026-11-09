@@ -30,8 +30,8 @@ def text_pdf(lines: list[str], footer: str) -> bytes:
         for ln in lines:
             stream.append(f"({_pdf_escape(ln)}) '")
         stream.append("ET")
-        footer = f"BT /F1 7 Tf 45 28 Td ({_pdf_escape(footer)} - page {i + 1} of {n_pages}) Tj ET"
-        data = ("\n".join(stream) + "\n" + footer).encode("latin-1")
+        footer_cmd = f"BT /F1 7 Tf 45 28 Td ({_pdf_escape(footer)} - page {i + 1} of {n_pages}) Tj ET"
+        data = ("\n".join(stream) + "\n" + footer_cmd).encode("latin-1")
         content_id = page_ids[i] + 1
         objects.append(
             f"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents {content_id} 0 R "

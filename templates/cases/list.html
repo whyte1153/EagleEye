@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Cases{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Investigate</div>
+  <h1>Investigation cases</h1>
+  <p>Tie scans, evidence and network imports together, keep a chronological timeline, and produce a printable case report.</p>
+</div>
+<section class="grid stats">
+  <div class="panel stat"><div class="label">Open</div><div class="value">{{ counts.open }}</div><div class="sub">not started</div></div>
+  <div class="panel stat"><div class="label">In progress</div><div class="value">{{ counts.in_progress }}</div><div class="sub">being worked</div></div>
+  <div class="panel stat"><div class="label">On hold</div><div class="value">{{ counts.on_hold }}</div><div class="sub">waiting</div></div>
+  <div class="panel stat"><div class="label">Closed</div><div class="value">{{ counts.closed }}</div><div class="sub">with closing note</div></div>
+</section>
+<section class="panel" style="margin-top:18px">
+  <form class="toolbar" method="get">
+    <div class="field"><label for="f-q">Search</label><input class="ee-input" id="f-q" name="q" value="{{ q }}" placeholder="ID, title, description"></div>
+    <div class="field"><label for="f-s">Status</label>
+      <select class="ee-select" id="f-s" name="status"><option value="">Any</option><option value="active"{% if status == 'active' %} selected{% endif %}>Not closed</option>
+      {% for v, l in status_choices %}<option value="{{ v }}"{% if v == status %} selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="f-p">Priority</label>
+      <select class="ee-select" id="f-p" name="priority"><option value="">Any</option>
+      {% for v, l in priority_choices %}<option value="{{ v }}"{% if v == priority %} selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="f-m">Assignee</label>
+      <select class="ee-select" id="f-m" name="mine"><option value="">Anyone</option><option value="1"{% if mine %} selected{% endif %}>Assigned to me</option></select></div>
+    <button class="btn-ee" type="submit">Filter</button>
+    {% if can_modify %}<a class="btn-ee solid" href="{% url 'cases:new' %}">New case</a>{% endif %}
+  </form>
+  {% if page %}
+  <div class="table-wrap"><table class="ee-table">
+    <thead><tr><th>Case</th><th>Title</th><th>Status</th><th>Priority</th><th>Assigned</th><th>Updated (UTC)</th></tr></thead>
+    <tbody>
+    {% for c in page %}
+      <tr>
+        <td class="mono"><a href="{{ c.get_absolute_url }}">{{ c.case_id }}</a></td>
+        <td style="overflow-wrap:anywhere">{{ c.title }}</td>
+        <td>{% if c.status == 'closed' %}<span class="badge-ee muted">Closed</span>{% elif c.status == 'on_hold' %}<span class="badge-ee planned">On hold</span>{% elif c.status == 'in_progress' %}<span class="badge-ee ready">In progress</span>{% else %}<span class="badge-ee role">Open</span>{% endif %}</td>
+        <td>{% if c.priority == 'critical' %}<span class="sev sev-critical">Critical</span>{% elif c.priority == 'high' %}<span class="sev sev-high">High</span>{% elif c.priority == 'medium' %}<span class="sev sev-medium">Medium</span>{% else %}<span class="sev sev-low">Low</span>{% endif %}</td>
+        <td>{{ c.assigned_to.get_username|default:"—" }}</td>
+        <td class="mono muted">{{ c.updated_at|date:"Y-m-d H:i" }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+  {% include "partials/pagination.html" with extra_query=pager_query %}
+  {% else %}<div class="empty"><b>No cases found</b>{% if can_modify %}Create the first case with “New case”.{% else %}Cases appear here once an investigator creates them.{% endif %}</div>{% endif %}
+</section>
+{% endblock %}

@@ -9,6 +9,7 @@ from django.db.models.functions import TruncDate
 from django.utils import timezone
 
 from apps.audit.models import AuditEvent
+from apps.cases.models import Case
 
 from apps.forensics.models import EvidenceItem
 from apps.network_analysis.models import NetworkImport
@@ -18,12 +19,6 @@ from apps.scanner.models import Finding, Scan
 from .models import Module
 
 User = get_user_model()
-
-# Metrics owned by modules that do not exist yet.  They are shown as "not yet
-# available" rather than as zeros, so nothing implies data that cannot exist.
-PENDING_METRICS = [
-    ("Open cases", "Under investigation", 5),
-]
 
 SEVERITY_ORDER = [(4, "Critical", "critical"), (3, "High", "high"), (2, "Medium", "medium"),
                   (1, "Low", "low"), (0, "Informational", "info")]
@@ -98,7 +93,9 @@ def dashboard_context() -> dict:
         {"label": "Network imports", "value": NetworkImport.objects.count(),
          "sub": f"{NetworkImport.objects.filter(max_severity__gte=2).count()} with medium+ indicators"
                 if NetworkImport.objects.exists() else "Nmap / PCAP, none yet"},
-    ] + [{"label": l, "sub": f"{sub} · available in phase {ph}", "pending": True} for l, sub, ph in PENDING_METRICS]
+        {"label": "Open cases", "value": Case.objects.exclude(status=Case.CLOSED).count(),
+         "sub": f"{Case.objects.filter(status=Case.CLOSED).count()} closed" if Case.objects.exists() else "none yet"},
+    ]
     return {
         "stat_cards": stat_cards, "evidence": ev, "severity_rows": stats["severity_rows"], "has_findings": stats["findings"] > 0,
         "has_scans": stats["assessments"] > 0, "recent_scans": list(Scan.objects.select_related("created_by")[:5]),

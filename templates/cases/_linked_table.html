@@ -1,0 +1,19 @@
+{# expects: rows (list of {link,obj}), kind, can_modify, case #}
+{% if rows %}
+<div class="table-wrap"><table class="ee-table">
+  <thead><tr><th>Item</th><th>Details</th><th>Linked</th>{% if can_modify and not case.is_closed %}<th></th>{% endif %}</tr></thead>
+  <tbody>
+  {% for r in rows %}
+    <tr>
+      <td style="overflow-wrap:anywhere">{% if r.obj %}<a href="{{ r.obj.get_absolute_url }}">{{ r.link.label }}</a>{% else %}{{ r.link.label }} <span class="badge-ee bad">record missing</span>{% endif %}</td>
+      <td>{% if r.obj %}
+        {% if kind == 'scan' %}{{ r.obj.get_status_display }} · {{ r.obj.findings_count }} finding(s) · highest <span class="sev sev-{{ r.obj.highest_severity_slug }}">{{ r.obj.highest_severity_label }}</span>
+        {% elif kind == 'evidence' %}{% if r.obj.integrity_status == 'verified' %}<span class="badge-ee ready">Verified</span>{% elif r.obj.integrity_status == 'failed' %}<span class="badge-ee bad">FAILED</span>{% else %}<span class="badge-ee muted">{{ r.obj.get_integrity_status_display }}</span>{% endif %}
+        {% else %}{{ r.obj.get_kind_display }}{% endif %}{% endif %}</td>
+      <td class="mono muted">{{ r.link.linked_at|date:"Y-m-d H:i" }} by {{ r.link.linked_by.get_username|default:"—" }}</td>
+      {% if can_modify and not case.is_closed %}<td><form method="post" action="{% url 'cases:unlink' case.case_id r.link.id %}">{% csrf_token %}<button class="btn-ee small" type="submit">Unlink</button></form></td>{% endif %}
+    </tr>
+  {% endfor %}
+  </tbody>
+</table></div>
+{% else %}<p class="muted" style="margin:0">None linked.</p>{% endif %}

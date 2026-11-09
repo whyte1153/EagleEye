@@ -13,5 +13,7 @@ urlpatterns = [
     path("scanner/", include("apps.scanner.urls")),
     path("forensics/", include("apps.forensics.urls")),
     path("network/", include("apps.network_analysis.urls")),
+    path("cases/", include("apps.cases.urls")),
+    path("reports/", include("apps.reports.urls")),
     path("", include("apps.core.urls")),
 ]

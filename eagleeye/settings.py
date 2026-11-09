@@ -81,6 +81,8 @@ INSTALLED_APPS = [
     "apps.scanner",
     "apps.forensics",
     "apps.network_analysis",
+    "apps.cases",
+    "apps.reports",
 ]
 
 MIDDLEWARE = [

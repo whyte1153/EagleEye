@@ -15,12 +15,11 @@ PASSWORD = "correct-horse-battery-9"
 class ModuleCatalogueTests(TestCase):
     def test_seeded_by_migration(self):
         self.assertEqual(Module.objects.count(), 10)
-        self.assertEqual(Module.objects.filter(status=Module.READY).count(), 8)
+        self.assertEqual(Module.objects.filter(status=Module.READY).count(), 10)
 
     def test_urls(self):
-        cases = Module.objects.get(slug="cases")  # still planned
-        self.assertFalse(cases.is_ready)
-        self.assertEqual(cases.get_absolute_url(), "/modules/cases/")
+        self.assertTrue(Module.objects.get(slug="cases").is_ready)
+        self.assertEqual(Module.objects.get(slug="cases").get_absolute_url(), reverse("cases:list"))
         self.assertEqual(Module.objects.get(slug="scanner").get_absolute_url(), reverse("scanner:home"))
         self.assertEqual(Module.objects.get(slug="users").get_absolute_url(), reverse("accounts:users"))
 
@@ -35,7 +34,7 @@ class DashboardTests(TestCase):
         for name in ("Vulnerability Scanner", "Digital Forensics", "Investigation Cases"):
             self.assertIn(name, html)
         self.assertIn("No scans yet", html)
-        self.assertIn("available in phase 5", html)
+        self.assertIn("Open cases", html)
 
     def test_dashboard_reflects_database(self):
         AuditEvent.objects.create(action="demo.event", actor_name="root", target="marker-xyz")
@@ -54,12 +53,17 @@ class DashboardTests(TestCase):
         self.assertEqual(series[-1]["height"], 100)
 
     def test_planned_module_page(self):
-        response = self.client.get(reverse("core:module_detail", args=["cases"]))
-        self.assertContains(response, "Arrives in phase 5")
+        Module.objects.create(slug="future", name="Future module", summary="x", icon="cases", phase=6, order=99)
+        response = self.client.get(reverse("core:module_detail", args=["future"]))
+        self.assertContains(response, "Arrives in phase 6")
 
     def test_ready_module_redirects_to_its_page(self):
         response = self.client.get(reverse("core:module_detail", args=["users"]))
         self.assertRedirects(response, reverse("accounts:users"))
+
+    def test_cases_and_reports_modules_are_online(self):
+        self.assertRedirects(self.client.get(reverse("core:module_detail", args=["cases"])), reverse("cases:list"))
+        self.assertRedirects(self.client.get(reverse("core:module_detail", args=["reports"])), reverse("reports:home"))
 
     def test_network_module_is_online(self):
         self.assertRedirects(self.client.get(reverse("core:module_detail", args=["network"])), reverse("network_analysis:home"))

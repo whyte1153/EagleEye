@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}{% if case %}Edit {{ case.case_id }}{% else %}New case{% endif %}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Investigate</div>
+  <h1>{% if case %}Edit {{ case.case_id }}{% else %}New case{% endif %}</h1>
+</div>
+<section class="panel" style="max-width:720px">
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="alert-ee error" role="alert">{{ form.non_field_errors }}</div><br>{% endif %}
+    <div class="field"><label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>{{ form.title }}{{ form.title.errors }}</div>
+    <div class="field"><label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>{{ form.description }}{{ form.description.errors }}</div>
+    <div class="field"><label for="{{ form.priority.id_for_label }}">{{ form.priority.label }}</label>{{ form.priority }}{{ form.priority.errors }}</div>
+    <div class="field"><label for="{{ form.assigned_to.id_for_label }}">{{ form.assigned_to.label }}</label>{{ form.assigned_to }}{{ form.assigned_to.errors }}</div>
+    <button class="btn-ee solid" type="submit">{% if case %}Save changes{% else %}Create case{% endif %}</button>
+    <a class="btn-ee" href="{% if case %}{{ case.get_absolute_url }}{% else %}{% url 'cases:list' %}{% endif %}">Cancel</a>
+  </form>
+</section>
+{% endblock %}

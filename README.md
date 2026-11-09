@@ -25,7 +25,7 @@ management and security reporting. This is **Phase 3 of 6** (foundation + vulner
 | Read-only Settings page | Done |
 | **Phase 2:** scanner engine (SSRF-safe), 17 checks, findings, scan history + compare, HTML/JSON/PDF reports, lab target | Done |
 | **Phase 3:** evidence upload, SHA-256/MD5 hashing, safe read-only storage, working-copy analysis, signature-based type detection with extension-mismatch warnings, notes, hash-chained chain of custody, integrity verification, CSV/JSON/HTML/PDF exports | Done |
-| Automated tests (259) | The pure-Python engines (scanner 60 + forensics 46 + network 27) were run during development; Django-side tests must be run by you (see below) |
+| Automated tests (about 286) | The pure-Python engines (scanner 58 + forensics 46 + network 27) were run during development; Django-side tests must be run by you (see below) |
 | Network analysis, cases, reports | Later phases (pages say so plainly) |
 
 Nothing on the dashboard is simulated. Metrics owned by modules that do not exist yet
@@ -43,6 +43,8 @@ eagleeye/                  <- project root (run commands here)
 │   ├── core/              Dashboard, module catalogue, settings page, error pages
 │   ├── accounts/          Profile (role), login view, throttle, user management, RBAC helpers
 │   ├── audit/             AuditEvent model (append-only), log_event(), viewer
+│   ├── cases/             Phase 5: Case, CaseLink, CaseEvent (append-only timeline)
+│   ├── reports/           Phase 5: reports hub, security overview, audit report
 │   ├── network_analysis/  Phase 4
 │   │   ├── engine/        PURE PYTHON: limits.py, rules.py, nmap_parser.py, pcap_reader.py, decode.py, pcap_analyzer.py
 │   │   ├── models.py      NetworkImport, NetworkHost
@@ -115,7 +117,7 @@ python manage.py runserver
 
 **Expected output**
 - `migrate`: lines like `Applying accounts.0001_initial... OK`, `Applying core.0002_seed_modules... OK`, `Applying audit.0001_initial... OK`.
-- `test`: `Found 259 test(s)` ... `Ran 259 tests` ... `OK`.
+- `test`: `Found ~286 test(s)` ... `OK` (the exact number can differ by a few) ... `OK`.
 - `runserver`: `Starting development server at http://127.0.0.1:8000/`.
 
 Open **http://127.0.0.1:8000/** and sign in with the account from step 6.
@@ -270,6 +272,32 @@ The parsers are small, dependency-free and bounded. That keeps the attack surfac
 
 `python -m unittest apps.network_analysis.tests.test_engine -v` runs the 27 engine tests (rules, Nmap parsing and attack rejection, limits, classic PCAP little/big-endian, PCAPNG, truncated/hostile files, filters) without Django. `apps/network_analysis/tests/test_views.py` covers permissions, upload safety, filtering, exports, audit and escaping via the Django test client.
 
+## Phase 5: cases, audit and reports
+
+### Cases (`/cases/`)
+- **Unique IDs** like `CS-2026-000001`, a **status** (Open, In progress, On hold, Closed), **priority** and **assignee**.
+- **Workflow rules:** closing needs a closing note; reopening needs a reason; a closed case can't be edited or have items linked until reopened. Cases are **never deleted** through EagleEye.
+- **Link** scans, evidence items and network imports. Items whose free-text *case reference* equals the case ID are **suggested** for one-click linking. Unlinking is recorded and the old link stays visible in the case record. If a linked record later disappears, the case says "record missing" instead of hiding it.
+- **Timeline:** every create/edit/status change/note/link/unlink is an append-only entry (who, when, what). Notes live in the timeline.
+- **Roles:** administrators and investigators change cases; reviewers read them and download reports.
+- Case actions are also written to the audit log (`case.*`).
+
+### Reports (`/reports/`)
+| Report | Formats | Who |
+|---|---|---|
+| Case report (summary, linked scans with top findings, evidence hashes and integrity, imports, full timeline) | HTML (print-friendly), PDF, JSON | everyone |
+| Security overview (latest findings per target, evidence integrity, imports, open cases) | HTML, PDF, JSON | everyone |
+| Scan, evidence-integrity and network-import reports | existing downloads, linked from the hub | everyone |
+| Audit report (date/action/actor filters, counts by action) | HTML, PDF, JSON | administrators |
+
+Everything is generated from saved records at download time, HTML-escaped, and each download is audited. For a styled PDF, open the HTML report and use your browser's **Print → Save as PDF**. The built-in PDF is a plain text layout.
+
+### Audit logs (`/audit/`, administrators)
+Filter by action, **actor** and **date range** plus free-text search, see the busiest actions of the last 24 hours, and **export CSV/JSON** of the filtered set. Each export carries an `X-Content-SHA256` header and its hash is recorded in the audit log, so you can later prove a file you hold is the one that was exported. CSV cells that start with `= + - @` are neutralised. Audit rows remain append-only in the application; a database administrator could still edit the database directly, so ship logs to external storage for stronger guarantees.
+
+### Tests for Phase 5
+`apps/cases/tests/test_cases.py` (Django test client): permissions, workflow rules, append-only enforcement, links (duplicates, missing records, cross-case unlink), timeline order, XSS escaping, report formats, overview, audit filters/export/CSV safety. The shared report renderer (`apps/core/reporting.py`) is pure Python.
+
 ## Using Phase 1
 - **Dashboard** - hero panel, metric cards, 7-day audit activity chart (real data), module overview, recent audit events.
 - **User Management** (admin) - create an *Investigator* and a *Reviewer* account, sign in as each and notice the sidebar changes and admin pages return "Access denied".
@@ -322,6 +350,6 @@ The parsers are small, dependency-free and bounded. That keeps the attack surfac
 1. **Phase 1** - foundation (done)
 2. ~~Phase 2 - scanner engine, SSRF protection, findings, scan history~~ (done)
 3. ~~Phase 3 - forensics: hashing, metadata, evidence integrity~~ (done)
-4. ~~Phase 4 - Nmap XML and PCAP analysis~~ (this release)
-5. Phase 5 - cases, expanded audit, reports
+4. ~~Phase 4 - Nmap XML and PCAP analysis~~ (done)
+5. ~~Phase 5 - cases, expanded audit, reports~~ (this release)
 6. Phase 6 - full test suite, hardening, deployment docs
