@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}{{ ev.evidence_id }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Evidence · {{ ev.evidence_id }}</div>
+  <h1 style="text-transform:none;letter-spacing:.04em;overflow-wrap:anywhere">{{ ev.original_filename }}</h1>
+  <p>
+    {% if ev.integrity_status == 'verified' %}<span class="badge-ee ready">Integrity verified</span>
+    {% elif ev.integrity_status == 'failed' %}<span class="badge-ee bad">INTEGRITY FAILED</span>
+    {% elif ev.integrity_status == 'missing' %}<span class="badge-ee planned">Original missing</span>
+    {% else %}<span class="badge-ee muted">Unverified</span>{% endif %}
+    {% if ev.extension_severity == 'high' %}<span class="sev sev-high">Extension: HIGH</span>{% elif ev.extension_severity == 'warn' %}<span class="sev sev-medium">Extension warning</span>{% endif %}
+  </p>
+</div>
+
+{% if ev.integrity_status == 'failed' %}<div class="danger-box" role="alert"><b>The stored file no longer matches the SHA-256 recorded at upload.</b> Do not rely on it. Downloads and analysis are refused. The failure is recorded in the chain of custody.</div>{% endif %}
+{% if ev.integrity_status == 'missing' %}<div class="danger-box" role="alert"><b>The stored original could not be found.</b> Restore it from backup, then verify again.</div>{% endif %}
+{% if ev.extension_severity == 'high' %}<div class="danger-box"><b>Possible disguised executable.</b> {{ ev.extension_note }} Handle in an isolated environment; EagleEye never executes uploads.</div>
+{% elif ev.extension_severity == 'warn' %}<div class="warn-box"><b>Extension does not match content.</b> {{ ev.extension_note }}</div>{% endif %}
+
+<div class="dl-row">
+  {% if can_modify %}
+  <form method="post" action="{% url 'forensics:verify' ev.evidence_id %}">{% csrf_token %}<button class="btn-ee small solid" type="submit">Verify integrity</button></form>
+  <form method="post" action="{% url 'forensics:reanalyze' ev.evidence_id %}">{% csrf_token %}<button class="btn-ee small" type="submit">Re-run analysis</button></form>
+  <a class="btn-ee small" href="{% url 'forensics:download' ev.evidence_id %}">Download original</a>
+  {% endif %}
+  <a class="btn-ee small" href="{% url 'forensics:item_report' ev.evidence_id 'html' %}">Record HTML</a>
+  <a class="btn-ee small" href="{% url 'forensics:item_report' ev.evidence_id 'pdf' %}">PDF</a>
+  <a class="btn-ee small" href="{% url 'forensics:item_report' ev.evidence_id 'json' %}">JSON</a>
+  <a class="btn-ee small" href="{% url 'forensics:vault' %}">Back to vault</a>
+</div>
+
+<section class="grid two">
+  <div class="panel">
+    <div class="panel-head"><h2>Hashes &amp; file</h2></div>
+    <div class="kv">
+      <div>SHA-256</div><div class="hash">{{ ev.sha256 }}</div>
+      <div>MD5 <span class="muted">(legacy ID only)</span></div><div class="hash">{{ ev.md5|default:"—" }}</div>
+      <div>Size</div><div>{{ ev.size|filesizeformat }} ({{ ev.size }} bytes)</div>
+      <div>Uploaded</div><div>{{ ev.uploaded_at|date:"Y-m-d H:i:s" }} UTC by {{ ev.uploaded_by.username|default:"—" }}</div>
+      <div>Last verified</div><div>{% if ev.last_verified_at %}{{ ev.last_verified_at|date:"Y-m-d H:i:s" }} UTC by {{ ev.last_verified_by.username|default:"—" }}{% else %}never{% endif %}</div>
+      <div>Case reference</div><div>{{ ev.case_reference|default:"—" }}</div>
+      <div>Description</div><div style="overflow-wrap:anywhere">{{ ev.description|default:"—" }}</div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h2>Type analysis</h2></div>
+    <div class="kv">
+      <div>Detected from content</div><div>{{ ev.detected_kind|default:"—" }} {{ ev.detected_mime }}</div>
+      <div>Claimed extension</div><div>{% if ev.declared_extension %}.{{ ev.declared_extension }}{% else %}none{% endif %}</div>
+      <div>Extension check</div><div>{{ ev.extension_note }}</div>
+      {% for k, v in meta_simple.items %}<div>{{ k }}</div><div style="overflow-wrap:anywhere">{{ v }}</div>{% endfor %}
+      {% if fs_times %}{% for k, v in fs_times.items %}<div>{{ k }}</div><div>{{ v }}</div>{% endfor %}{% endif %}
+    </div>
+  </div>
+</section>
+
+{% if zip_entries %}
+<section class="panel">
+  <div class="panel-head"><h2>Archive entries (listing only, nothing extracted)</h2></div>
+  <div class="table-wrap"><table class="ee-table"><thead><tr><th>Name</th><th>Declared size</th><th>Flags</th></tr></thead><tbody>
+  {% for z in zip_entries %}<tr><td style="overflow-wrap:anywhere">{{ z.name }}</td><td class="mono">{{ z.size }}</td>
+    <td>{% if z.suspicious_path %}<span class="sev sev-high">path trick</span> {% endif %}{% if z.encrypted %}<span class="sev sev-info">encrypted</span>{% endif %}</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+{% endif %}
+
+<section class="grid two">
+  <div class="panel">
+    <div class="panel-head"><h2>Investigator notes</h2></div>
+    {% for n in notes %}<div class="note-item"><div class="who">{{ n.author_name|default:"—" }} · {{ n.created_at|date:"Y-m-d H:i" }} UTC</div><div style="white-space:pre-wrap;overflow-wrap:anywhere">{{ n.text }}</div></div>
+    {% empty %}<div class="empty"><b>No notes yet</b></div>{% endfor %}
+    {% if can_modify %}
+    <form method="post" action="{% url 'forensics:note' ev.evidence_id %}" style="margin-top:14px">{% csrf_token %}
+      <div class="field"><label for="{{ note_form.text.id_for_label }}">{{ note_form.text.label }}</label>{{ note_form.text }}</div>
+      <button class="btn-ee small" type="submit">Add note</button> <span class="help">Notes cannot be edited or deleted; add a new note to correct one.</span>
+    </form>
+    {% endif %}
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h2>Chain of custody</h2>
+      <span class="{% if chain_ok %}chain-ok{% else %}chain-bad{% endif %} mono">{% if chain_ok %}HASH CHAIN VALID{% else %}HASH CHAIN BROKEN{% endif %}</span></div>
+    <p class="help" style="margin-top:0">{{ chain_message }}</p>
+    <ul class="feed">
+      {% for e in events %}
+      <li><time>{{ e.created_at|date:"Y-m-d H:i:s" }}</time><span><code>{{ e.action }}</code> {% if e.actor_name %}by <b>{{ e.actor_name }}</b>{% endif %}<br><span class="muted">{{ e.detail }}</span><br><span class="mono muted" style="font-size:11px">#{{ forloop.counter }} {{ e.entry_hash|slice:":16" }}…</span></span></li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+<p class="help">{{ caveat }}</p>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Audit logs{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Governance</div>
+  <h1>Audit logs</h1>
+  <p>Append-only history of sign-ins and administrative actions. Records cannot be edited or deleted through the application.</p>
+</div>
+<section class="panel">
+  <form class="toolbar" method="get">
+    <div class="field">
+      <label for="f-action">Action</label>
+      <select class="ee-select" id="f-action" name="action">
+        <option value="">All actions</option>
+        {% for a in actions %}<option value="{{ a }}"{% if a == selected_action %} selected{% endif %}>{{ a }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="field">
+      <label for="f-q">Search</label>
+      <input class="ee-input" id="f-q" name="q" value="{{ query }}" placeholder="actor, target or detail">
+    </div>
+    <button class="btn-ee" type="submit">Filter</button>
+  </form>
+  {% if page %}
+  <div class="table-wrap">
+    <table class="ee-table">
+      <thead><tr><th>Time (UTC)</th><th>Action</th><th>Actor</th><th>Target</th><th>Detail</th><th>IP</th></tr></thead>
+      <tbody>
+      {% for e in page %}
+        <tr>
+          <td class="mono">{{ e.created_at|date:"Y-m-d H:i:s" }}</td>
+          <td><code class="act">{{ e.action }}</code></td>
+          <td>{{ e.actor_name|default:"—" }}</td>
+          <td>{{ e.target|default:"—" }}</td>
+          <td class="muted">{{ e.detail|default:"—" }}</td>
+          <td class="mono muted">{{ e.ip_address|default:"—" }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include "partials/pagination.html" with extra_query=pager_query %}
+  {% else %}
+  <div class="empty"><b>No matching events</b>Try clearing the filters.</div>
+  {% endif %}
+</section>
+{% endblock %}

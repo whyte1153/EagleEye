@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Evidence vault{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Investigate</div>
+  <h1>Evidence vault</h1>
+  <p>Inventory of every preserved item with its integrity status. Exports reflect the filters below.</p>
+</div>
+<section class="panel">
+  <form class="toolbar" method="get">
+    <div class="field"><label for="f-q">Search</label><input class="ee-input" id="f-q" name="q" value="{{ q }}" placeholder="ID, name, hash, case ref"></div>
+    <div class="field"><label for="f-s">Integrity</label>
+      <select class="ee-select" id="f-s" name="status"><option value="">Any</option>
+      {% for v, l in status_choices %}<option value="{{ v }}"{% if v == status %} selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="f-f">Flags</label>
+      <select class="ee-select" id="f-f" name="flag"><option value="">All</option><option value="mismatch"{% if flag == 'mismatch' %} selected{% endif %}>Extension warnings</option></select></div>
+    <button class="btn-ee" type="submit">Filter</button>
+  </form>
+  <div class="dl-row" style="margin-bottom:14px">
+    <a class="btn-ee small" href="{% url 'forensics:export_inventory' 'csv' %}?{{ pager_query }}">Inventory CSV</a>
+    <a class="btn-ee small" href="{% url 'forensics:export_inventory' 'json' %}?{{ pager_query }}">Inventory JSON</a>
+    <a class="btn-ee small" href="{% url 'forensics:integrity_report' 'html' %}?{{ pager_query }}">Integrity report HTML</a>
+    <a class="btn-ee small" href="{% url 'forensics:integrity_report' 'pdf' %}?{{ pager_query }}">PDF</a>
+    <a class="btn-ee small" href="{% url 'forensics:integrity_report' 'json' %}?{{ pager_query }}">JSON</a>
+    {% if can_modify %}
+    <form method="post" action="{% url 'forensics:verify_all' %}" style="display:inline">{% csrf_token %}<button class="btn-ee small solid" type="submit">Verify all now</button></form>
+    {% endif %}
+  </div>
+  {% include "forensics/_evidence_table.html" with items=page %}
+  {% include "partials/pagination.html" with extra_query=pager_query %}
+</section>
+{% endblock %}

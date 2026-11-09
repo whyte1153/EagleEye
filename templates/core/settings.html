@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Administration</div>
+  <h1>Settings</h1>
+  <p>A read-only view of the security configuration currently in effect. Values are set through environment variables (see <span class="mono">.env.example</span>); secrets are never shown here.</p>
+</div>
+<section class="grid two">
+  <div class="panel">
+    <div class="panel-head"><h2>Security configuration</h2></div>
+    <div class="kv">
+      {% for label, value, warn in rows %}
+        <div>{{ label }}</div><div{% if warn %} class="warn"{% endif %}>{{ value }}</div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h2>Runtime</h2></div>
+    <div class="kv">
+      {% for label, value in versions %}<div>{{ label }}</div><div>{{ value }}</div>{% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

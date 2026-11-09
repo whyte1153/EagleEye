@@ -1,0 +1,23 @@
+{% if scans %}
+<div class="table-wrap">
+<table class="ee-table">
+  <thead><tr>{% if selectable %}<th><span class="visually-hidden">Select</span></th>{% endif %}<th>#</th><th>Target</th><th>Status</th><th>Worst</th><th>Findings</th><th>When (UTC)</th><th>By</th></tr></thead>
+  <tbody>
+  {% for s in scans %}
+    <tr>
+      {% if selectable %}<td><input type="checkbox" name="id" value="{{ s.pk }}" aria-label="Select scan {{ s.pk }}"></td>{% endif %}
+      <td class="mono"><a href="{{ s.get_absolute_url }}">#{{ s.pk }}</a></td>
+      <td style="overflow-wrap:anywhere">{{ s.normalized_url|default:s.target_url }}</td>
+      <td><span class="badge-ee {% if s.status == 'completed' %}ready{% else %}planned{% endif %}">{{ s.get_status_display }}</span></td>
+      <td>{% if s.findings_count %}<span class="sev sev-{{ s.highest_severity_slug }}">{{ s.highest_severity_label }}</span>{% elif s.status == 'completed' %}<span class="sev sev-none">None</span>{% else %}<span class="muted">—</span>{% endif %}</td>
+      <td class="mono">{{ s.findings_count }}</td>
+      <td class="mono muted">{{ s.created_at|date:"Y-m-d H:i" }}</td>
+      <td>{{ s.created_by.username|default:"—" }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<div class="empty"><b>No assessments yet</b>Saved scans appear here.</div>
+{% endif %}

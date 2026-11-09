@@ -1,0 +1,27 @@
+{% if items %}
+<div class="table-wrap">
+<table class="ee-table">
+  <thead><tr><th>ID</th><th>File</th><th>Type</th><th>Size</th><th>SHA-256</th><th>Integrity</th><th>Uploaded (UTC)</th></tr></thead>
+  <tbody>
+  {% for e in items %}
+    <tr>
+      <td class="mono"><a href="{{ e.get_absolute_url }}">{{ e.evidence_id }}</a></td>
+      <td style="overflow-wrap:anywhere">{{ e.original_filename }}</td>
+      <td>{{ e.detected_kind|default:"—" }}
+        {% if e.extension_severity == 'high' %}<span class="sev sev-high" title="{{ e.extension_note }}">Ext HIGH</span>
+        {% elif e.extension_severity == 'warn' %}<span class="sev sev-medium" title="{{ e.extension_note }}">Ext warn</span>{% endif %}</td>
+      <td class="mono">{{ e.size|filesizeformat }}</td>
+      <td class="mono muted" title="{{ e.sha256 }}">{{ e.sha256|slice:":16" }}…</td>
+      <td>{% if e.integrity_status == 'verified' %}<span class="badge-ee ready">Verified</span>
+          {% elif e.integrity_status == 'failed' %}<span class="badge-ee bad">FAILED</span>
+          {% elif e.integrity_status == 'missing' %}<span class="badge-ee planned">Missing</span>
+          {% else %}<span class="badge-ee muted">Unverified</span>{% endif %}</td>
+      <td class="mono muted">{{ e.uploaded_at|date:"Y-m-d H:i" }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<div class="empty"><b>No evidence yet</b>Uploaded files appear here with their hashes and integrity status.</div>
+{% endif %}

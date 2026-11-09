@@ -1,0 +1,22 @@
+{% if items %}
+<div class="table-wrap">
+<table class="ee-table">
+  <thead><tr><th>ID</th><th>File</th><th>Kind</th><th>Size</th><th>Highest indicator</th><th>By</th><th>Imported (UTC)</th></tr></thead>
+  <tbody>
+  {% for i in items %}
+    <tr>
+      <td class="mono"><a href="{{ i.get_absolute_url }}">{{ i.import_id }}</a></td>
+      <td style="overflow-wrap:anywhere">{{ i.original_filename }}</td>
+      <td>{{ i.get_kind_display }}</td>
+      <td class="mono">{{ i.size|filesizeformat }}</td>
+      <td>{% if i.max_severity == 4 %}<span class="sev sev-critical">Critical</span>{% elif i.max_severity == 3 %}<span class="sev sev-high">High</span>{% elif i.max_severity == 2 %}<span class="sev sev-medium">Medium</span>{% elif i.max_severity == 1 %}<span class="sev sev-low">Low</span>{% elif i.max_severity == 0 %}<span class="sev sev-info">Info</span>{% else %}<span class="muted">none</span>{% endif %}</td>
+      <td>{{ i.imported_by.get_username|default:"—" }}</td>
+      <td class="mono muted">{{ i.imported_at|date:"Y-m-d H:i" }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<div class="empty"><b>Nothing imported yet</b>Imported Nmap and PCAP files appear here.</div>
+{% endif %}

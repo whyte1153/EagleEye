@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Compare scans{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Scan history</div>
+  <h1>Compare scans</h1>
+  <p><a href="{{ older.get_absolute_url }}">#{{ older.pk }}</a> ({{ older.created_at|date:"Y-m-d H:i" }}) &rarr; <a href="{{ newer.get_absolute_url }}">#{{ newer.pk }}</a> ({{ newer.created_at|date:"Y-m-d H:i" }}).
+     Findings are matched by check and title.</p>
+</div>
+{% if different_hosts %}<div class="alert-ee warning">These scans are for different targets ({{ older.host }} and {{ newer.host }}); the comparison may not be meaningful.</div>{% endif %}
+<section class="grid stats">
+  <div class="panel stat"><div class="label">New</div><div class="value">{{ diff.new|length }}</div><div class="sub">appeared in #{{ newer.pk }}</div></div>
+  <div class="panel stat"><div class="label">Resolved</div><div class="value">{{ diff.resolved|length }}</div><div class="sub">gone since #{{ older.pk }}</div></div>
+  <div class="panel stat"><div class="label">Unchanged</div><div class="value">{{ diff.unchanged|length }}</div><div class="sub">still present</div></div>
+  <div class="panel stat"><div class="label">Severity changed</div><div class="value">{{ diff.changed_severity|length }}</div><div class="sub">same finding, new level</div></div>
+</section>
+<section class="panel"><div class="panel-head"><h2>New findings</h2></div>
+  <div class="stack">{% for f in diff.new %}<div class="diff-new">{% include "scanner/_finding.html" %}</div>{% empty %}<div class="empty"><b>Nothing new</b></div>{% endfor %}</div></section>
+<section class="panel"><div class="panel-head"><h2>Resolved findings</h2></div>
+  <div class="stack">{% for f in diff.resolved %}<div class="diff-resolved">{% include "scanner/_finding.html" %}</div>{% empty %}<div class="empty"><b>Nothing resolved</b></div>{% endfor %}</div></section>
+{% if diff.changed_severity %}
+<section class="panel"><div class="panel-head"><h2>Severity changes</h2></div>
+  <table class="ee-table"><thead><tr><th>Finding</th><th>Before</th><th>After</th></tr></thead><tbody>
+  {% for before, after in diff.changed_severity %}<tr><td>{{ after.title }}</td><td><span class="sev sev-{{ before.severity_slug }}">{{ before.severity_label }}</span></td><td><span class="sev sev-{{ after.severity_slug }}">{{ after.severity_label }}</span></td></tr>{% endfor %}
+  </tbody></table></section>
+{% endif %}
+<section class="panel"><div class="panel-head"><h2>Unchanged findings</h2></div>
+  {% if diff.unchanged %}<ul class="feed">{% for f in diff.unchanged %}<li><span class="sev sev-{{ f.severity_slug }}">{{ f.severity_label }}</span><span>{{ f.title }}</span></li>{% endfor %}</ul>
+  {% else %}<div class="empty"><b>No persistent findings</b></div>{% endif %}</section>
+{% endblock %}

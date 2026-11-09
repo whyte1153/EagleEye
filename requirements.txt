@@ -1,0 +1,6 @@
+# Phase 1 needs only Django. Later phases add: requests, scapy, reportlab, etc.
+# Django 6.x needs Python 3.12+. Django 5.2 LTS needs Python 3.10+.
+Django>=5.2,<6.2
+# Optional (production / PostgreSQL):
+# psycopg[binary]>=3.2,<4
+# gunicorn>=22,<24

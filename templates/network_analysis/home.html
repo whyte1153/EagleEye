@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Network analysis{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Investigate</div>
+  <h1>Network analysis</h1>
+  <p>Import Nmap XML results or packet captures from networks you are authorized to assess. EagleEye reads and summarises them with strict limits. It never runs a scan, never executes imported files, and never stores packet payloads.</p>
+</div>
+
+<section class="grid stats">
+  <div class="panel stat"><div class="label">Imports</div><div class="value">{{ stats.total }}</div><div class="sub">Nmap and PCAP</div></div>
+  <div class="panel stat"><div class="label">Nmap XML</div><div class="value">{{ stats.nmap }}</div><div class="sub">host and service inventories</div></div>
+  <div class="panel stat"><div class="label">PCAP captures</div><div class="value">{{ stats.pcap }}</div><div class="sub">traffic summaries</div></div>
+  <div class="panel stat"><div class="label">Medium or higher</div><div class="value"{% if stats.flagged %} style="color:var(--amber)"{% endif %}>{{ stats.flagged }}</div><div class="sub">imports with notable indicators</div></div>
+</section>
+
+<section class="grid two">
+  <div class="panel">
+    <div class="panel-head"><h2>Import a file</h2></div>
+    {% if can_modify %}
+    <form method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}<div class="alert-ee error" role="alert">{{ form.non_field_errors }}</div><br>{% endif %}
+      <div class="field"><label for="{{ form.file.id_for_label }}">{{ form.file.label }}</label>{{ form.file }}{{ form.file.errors }}<div class="help">Maximum {{ max_mb }} MB. Type is detected from the content, not the file name. Compressed files are not accepted.</div></div>
+      <div class="field"><label for="{{ form.case_reference.id_for_label }}">{{ form.case_reference.label }}</label>{{ form.case_reference }}{{ form.case_reference.errors }}</div>
+      <div class="field"><label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>{{ form.description }}{{ form.description.errors }}</div>
+      <div class="field">
+        <label style="text-transform:none;letter-spacing:0;font-family:var(--sans);font-size:14px;color:var(--text);display:flex;gap:10px;align-items:flex-start">{{ form.authorization_confirmed }} <span>{{ form.authorization_confirmed.label }}</span></label>
+        {{ form.authorization_confirmed.errors }}
+      </div>
+      <button class="btn-ee solid" type="submit">Analyse</button>
+    </form>
+    {% else %}
+    <div class="empty"><b>Read-only access</b>Your role can review imports and export them but cannot add new ones.</div>
+    {% endif %}
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h2>Get the data (Kali)</h2></div>
+    <ul class="upload-note">
+      <li><b>Nmap (only on a network you own or are authorized to test):</b><br><code>nmap -sV -oX scan.xml 192.168.56.0/24</code></li>
+      <li><b>Packet capture:</b><br><code>sudo tcpdump -i eth0 -w capture.pcap</code></li>
+      <li><b>Safety:</b> files are parsed, not executed. XML with DTD/entity tricks is rejected. Size, host, port and packet counts are capped.</li>
+      <li><b>Preservation:</b> imports keep only parsed results. Store the original in the Evidence Vault if you need chain of custody.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel-head"><h2>Recent imports</h2><a class="btn-ee small" href="{% url 'network_analysis:imports' %}">All imports</a></div>
+  {% include "network_analysis/_import_table.html" with items=recent %}
+</section>
+{% endblock %}

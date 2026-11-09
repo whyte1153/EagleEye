@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Digital forensics{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Investigate</div>
+  <h1>Digital forensics</h1>
+  <p>Preserve files you are authorized to examine. EagleEye hashes each upload as it arrives, stores the original read-only outside the web root, analyses a working copy, and keeps a tamper-evident chain of custody.</p>
+</div>
+
+<section class="grid stats">
+  <div class="panel stat"><div class="label">Evidence items</div><div class="value">{{ stats.total }}</div><div class="sub">in the vault</div></div>
+  <div class="panel stat"><div class="label">Verified</div><div class="value">{{ stats.verified }}</div><div class="sub">last check matched SHA-256</div></div>
+  <div class="panel stat"><div class="label">Failed / missing</div><div class="value" {% if stats.failed or stats.missing %}style="color:var(--red)"{% endif %}>{{ stats.failed|add:stats.missing }}</div><div class="sub">need attention</div></div>
+  <div class="panel stat"><div class="label">Extension warnings</div><div class="value">{{ stats.mismatches }}</div><div class="sub">content ≠ file extension</div></div>
+</section>
+
+<section class="grid two">
+  <div class="panel">
+    <div class="panel-head"><h2>Add evidence</h2></div>
+    {% if can_modify %}
+    <form method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}<div class="alert-ee error" role="alert">{{ form.non_field_errors }}</div><br>{% endif %}
+      <div class="field"><label for="{{ form.file.id_for_label }}">{{ form.file.label }}</label>{{ form.file }}{{ form.file.errors }}<div class="help">Maximum {{ max_mb }} MB. The file is never executed or opened by EagleEye.</div></div>
+      <div class="field"><label for="{{ form.case_reference.id_for_label }}">{{ form.case_reference.label }}</label>{{ form.case_reference }}{{ form.case_reference.errors }}</div>
+      <div class="field"><label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>{{ form.description }}{{ form.description.errors }}</div>
+      <div class="field">
+        <label style="text-transform:none;letter-spacing:0;font-family:var(--sans);font-size:14px;color:var(--text);display:flex;gap:10px;align-items:flex-start">{{ form.authorization_confirmed }} <span>{{ form.authorization_confirmed.label }}</span></label>
+        {{ form.authorization_confirmed.errors }}
+      </div>
+      <button class="btn-ee solid" type="submit">Hash &amp; preserve</button>
+    </form>
+    {% else %}
+    <div class="empty"><b>Read-only access</b>Your role can review the vault and reports but cannot add or modify evidence.</div>
+    {% endif %}
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h2>How evidence is handled</h2></div>
+    <ul class="upload-note">
+      <li><b>Hashed on arrival:</b> SHA-256 (and legacy MD5) are computed while the file is written.</li>
+      <li><b>Original preserved:</b> stored under a random name, read-only, outside any web-served folder. Never modified or deleted by the app.</li>
+      <li><b>Working copy:</b> analysis runs on a copy that is proven identical by hash, then discarded.</li>
+      <li><b>Type check:</b> content signature vs file extension, to expose disguised files.</li>
+      <li><b>Chain of custody:</b> every action is logged in a hash-chained, append-only record.</li>
+      <li><b>Not guaranteed:</b> timestamps and other metadata can be altered by acquisition and upload; a hash proves the stored copy is unchanged since receipt, not before.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel-head"><h2>Recently added</h2><a class="btn-ee small" href="{% url 'forensics:vault' %}">Open vault</a></div>
+  {% include "forensics/_evidence_table.html" with items=recent %}
+</section>
+{% endblock %}

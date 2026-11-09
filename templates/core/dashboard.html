@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<section class="panel hero" aria-labelledby="hero-title">
+  <div>
+    <div class="eyebrow">Command center</div>
+    <h1 id="hero-title">Welcome, <span>{{ user.get_username }}</span></h1>
+    <p>EagleEye is online: scan authorized web targets, preserve evidence with a chain of custody, and analyse Nmap and PCAP imports. Case management and reports arrive in the next phase.</p>
+    <div class="hero-meta">
+      <div><b>{{ modules_ready }} / {{ modules_total }}</b>modules online</div>
+      <div><b>{{ users_total }}</b>operators</div>
+      <div><b>{{ audit_24h }}</b>audit events · 24h</div>
+      {% if next_phase %}<div><b>Phase {{ next_phase }}</b>up next</div>{% endif %}
+    </div>
+  </div>
+  <div class="radar" aria-hidden="true"><i style="top:24%;left:66%"></i><i style="top:62%;left:28%"></i><i style="top:72%;left:70%"></i></div>
+</section>
+
+<section aria-label="Key metrics">
+  <div class="grid stats">
+    {% for c in stat_cards %}
+    <div class="panel stat{% if c.pending %} pending{% endif %}">
+      <div class="label">{{ c.label }}</div>
+      {% if c.pending %}<div class="value" aria-label="Not yet available">— —</div>{% else %}<div class="value">{{ c.value }}</div>{% endif %}
+      <div class="sub">{{ c.sub }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="grid two">
+  <div class="panel" aria-labelledby="act-h">
+    <div class="panel-head"><h2 id="act-h">Audit activity · last 7 days</h2><span class="mono muted">{{ activity_total }} events</span></div>
+    {% if activity_total %}
+      <div class="bars" role="img" aria-label="Audit events per day for the last seven days">
+        {% for d in activity %}
+        <div class="bar"><span class="n">{{ d.count }}</span><div class="col" style="height:{{ d.height }}%"></div><span class="d">{{ d.label }}</span></div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty"><b>No activity yet</b>Events appear here as people sign in and manage users.</div>
+    {% endif %}
+  </div>
+
+  <div class="panel" aria-labelledby="sev-h">
+    <div class="panel-head"><h2 id="sev-h">Findings by severity</h2></div>
+    {% if has_findings %}
+    <div class="sevbars">
+      {% for r in severity_rows %}<div class="sevbar"><span>{{ r.label }}</span><span class="track"><span class="fill sev-{{ r.slug }}" style="display:block;width:{{ r.pct }}%"></span></span><span class="num">{{ r.count }}</span></div>{% endfor %}
+    </div>
+    <p class="help" style="margin-top:12px">Latest scan of each target.</p>
+    {% else %}
+    <div class="empty"><b>No scans yet</b>Run an assessment in the scanner and its findings will be charted here.</div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="grid two">
+  <div class="panel" aria-labelledby="evi-h">
+    <div class="panel-head"><h2 id="evi-h">Evidence integrity</h2><a class="btn-ee small" href="{% url 'forensics:vault' %}">Vault</a></div>
+    {% if evidence.total %}
+    <div class="sevbars">
+      {% for r in evidence.rows %}<div class="sevbar"><span>{{ r.label }}</span><span class="track"><span class="fill sev-{{ r.slug }}" style="display:block;width:{{ r.pct }}%"></span></span><span class="num">{{ r.count }}</span></div>{% endfor %}
+    </div>
+    <p class="help" style="margin-top:12px">{{ evidence.mismatches }} item(s) with an extension/content warning.</p>
+    {% else %}
+    <div class="empty"><b>Vault is empty</b>Add a file in Digital Forensics; its hash and integrity status will appear here.</div>
+    {% endif %}
+  </div>
+  <div class="panel" aria-labelledby="scan-h">
+  <div class="panel-head"><h2 id="scan-h">Recent scans</h2><a class="btn-ee small" href="{% url 'scanner:history' %}">History</a></div>
+  {% include "scanner/_scan_table.html" with scans=recent_scans selectable=False %}
+  </div>
+</section>
+
+<section aria-labelledby="mod-h">
+  <div class="panel-head"><h2 id="mod-h" class="eyebrow">Module overview</h2></div>
+  <div class="grid modules">
+    {% for m in modules %}
+    <a class="panel module-card" href="{{ m.get_absolute_url }}">
+      <div class="module-top">
+        <span class="ico"><svg aria-hidden="true" fill="none"><use href="#i-{{ m.icon }}"/></svg></span>
+        {% if m.is_ready %}<span class="badge-ee ready">Online</span>{% else %}<span class="badge-ee planned">Phase {{ m.phase }}</span>{% endif %}
+      </div>
+      <h3>{{ m.name }}</h3>
+      <p>{{ m.summary }}</p>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="panel" aria-labelledby="ev-h">
+  <div class="panel-head">
+    <h2 id="ev-h">Recent audit events</h2>
+    {% if current_role == 'admin' %}<a class="btn-ee small" href="{% url 'audit:list' %}">View all</a>{% endif %}
+  </div>
+  {% if recent_events %}
+  <ul class="feed">
+    {% for e in recent_events %}
+    <li><time datetime="{{ e.created_at|date:'c' }}">{{ e.created_at|date:"M d H:i:s" }}</time>
+      <span><code>{{ e.action }}</code> {% if e.actor_name %}by <b>{{ e.actor_name }}</b>{% endif %}{% if e.target %} → {{ e.target }}{% endif %}</span></li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="empty"><b>Audit log is empty</b>Nothing has been recorded yet.</div>
+  {% endif %}
+</section>
+{% endblock %}

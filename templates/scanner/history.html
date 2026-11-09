@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Scan history{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Operate</div>
+  <h1>Scan history</h1>
+  <p>Every saved assessment. Tick two scans and compare them to see which findings are new, resolved or unchanged.</p>
+</div>
+<section class="panel">
+  <form class="toolbar" method="get">
+    <div class="field"><label for="f-q">Target contains</label><input class="ee-input" id="f-q" name="q" value="{{ q }}" placeholder="example.com"></div>
+    <div class="field"><label for="f-status">Status</label>
+      <select class="ee-select" id="f-status" name="status"><option value="">Any</option>
+        {% for v, l in status_choices %}<option value="{{ v }}"{% if v == status %} selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="f-sev">Worst finding at least</label>
+      <select class="ee-select" id="f-sev" name="severity"><option value="">Any</option>
+        {% for v, l in severity_choices %}<option value="{{ v }}"{% if v|stringformat:"s" == severity %} selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+    <button class="btn-ee" type="submit">Filter</button>
+  </form>
+  <form method="get" action="{% url 'scanner:compare' %}">
+    {% include "scanner/_scan_table.html" with scans=page selectable=True %}
+    {% if page %}<p style="margin-top:14px"><button class="btn-ee solid" type="submit">Compare selected (2)</button></p>{% endif %}
+  </form>
+  {% include "partials/pagination.html" with extra_query=pager_query %}
+</section>
+{% endblock %}

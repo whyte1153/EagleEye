@@ -1,0 +1,34 @@
+{% extends "base_public.html" %}
+{% block title %}Sign in{% endblock %}
+{% block body %}
+<main class="login-wrap" id="main">
+  <section class="panel login-card" aria-labelledby="login-title">
+    <div class="login-eye" aria-hidden="true">
+      <div class="radar"><i style="top:30%;left:62%"></i><i style="top:68%;left:34%"></i></div>
+      <svg><use href="#logo-eye"/></svg>
+    </div>
+    <h1 id="login-title">EagleEye</h1>
+    <p class="tag">SEE THREATS. PRESERVE EVIDENCE. STRENGTHEN SECURITY.</p>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="alert-ee error" role="alert">{% for e in form.non_field_errors %}{{ e }}{% endfor %}</div><br>
+      {% endif %}
+      <div class="field">
+        <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+        {{ form.username }}
+        {{ form.username.errors }}
+      </div>
+      <div class="field">
+        <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+        {{ form.password }}
+        {{ form.password.errors }}
+      </div>
+      <input type="hidden" name="next" value="{{ next }}">
+      <button type="submit" class="btn-ee solid" style="width:100%">Authenticate</button>
+    </form>
+    <p class="notice">Authorized use only. Activity on this system is logged. Assess and examine only systems and files you are permitted to.</p>
+  </section>
+</main>
+{% endblock %}

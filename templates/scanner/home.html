@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Vulnerability scanner{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Operate</div>
+  <h1>Vulnerability scanner</h1>
+  <p>Checks the transport security and configuration of web targets you are authorized to assess: HTTPS, redirects, TLS, security headers and cookie flags.</p>
+</div>
+
+<section class="grid two">
+  <div class="panel">
+    <div class="panel-head"><h2>New assessment</h2></div>
+    {% if can_run %}
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}<div class="alert-ee error" role="alert">{{ form.non_field_errors }}</div><br>{% endif %}
+      <div class="field">
+        <label for="{{ form.url.id_for_label }}">{{ form.url.label }}</label>
+        {{ form.url }}{{ form.url.errors }}
+        <div class="help">{{ form.url.help_text }}</div>
+      </div>
+      <div class="field">
+        <label for="{{ form.authorization_note.id_for_label }}">{{ form.authorization_note.label }}</label>
+        {{ form.authorization_note }}{{ form.authorization_note.errors }}
+      </div>
+      <div class="field">
+        <label style="text-transform:none;letter-spacing:0;font-family:var(--sans);font-size:14px;color:var(--text);display:flex;gap:10px;align-items:flex-start">
+          {{ form.authorization_confirmed }} <span>{{ form.authorization_confirmed.label }}</span>
+        </label>
+        {{ form.authorization_confirmed.errors }}
+      </div>
+      <button class="btn-ee solid" type="submit">Run assessment</button>
+      <p class="help" style="margin-top:10px">The scan runs while you wait (up to {{ limits.deadline }} s). Every attempt, including blocked ones, is saved and audited.</p>
+    </form>
+    {% else %}
+      <div class="empty"><b>Read-only access</b>Your role can review saved scans but cannot start new ones.</div>
+    {% endif %}
+  </div>
+
+  <div style="display:grid;gap:18px;align-content:start">
+    <div class="panel">
+      <div class="panel-head"><h2>Scan policy</h2></div>
+      <div class="kv">
+        <div>Targets</div><div>Any public web address you type above and confirm you are authorized to test</div>
+        <div>Lab mode</div><div{% if lab_mode %} class="warn"{% endif %}>{% if lab_mode %}ON: {{ lab_targets|join:", "|default:"no targets" }}{% else %}off{% endif %}</div>
+        <div>Ports</div><div>{{ limits.ports }}</div>
+        <div>Rate limit</div><div>{{ limits.rate }} scans / 10 min / user</div>
+        <div>Concurrency</div><div>{{ limits.concurrent }} at once</div>
+        <div>Timeouts</div><div>{{ limits.timeout }} s per request, {{ limits.deadline }} s total</div>
+        <div>Body limit</div><div>{{ limits.body_kb }} KB</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>What this does not test</h2></div>
+      <p class="help" style="margin:0">EagleEye checks configuration only. It does not look for injection, broken access control, outdated software or other application flaws, and a clean result does not mean a site is secure. Private, loopback, link-local and cloud-metadata addresses are always refused (lab targets excepted, never metadata).</p>
+    </div>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel-head"><h2>Recent assessments</h2><a class="btn-ee small" href="{% url 'scanner:history' %}">Full history</a></div>
+  {% include "scanner/_scan_table.html" with scans=recent selectable=False %}
+</section>
+{% endblock %}

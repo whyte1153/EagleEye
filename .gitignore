@@ -1,0 +1,24 @@
+# Python / virtualenv
+.venv/
+venv/
+__pycache__/
+*.pyc
+# Secrets & local config
+.env
+*.pem
+*.key
+*.crt
+# Local databases
+db.sqlite3
+*.sqlite3
+# Evidence, uploads, reports, generated artifacts (used from Phase 3 onward)
+evidence_store/
+media/
+reports_out/
+staticfiles/
+# Logs
+logs/*.log
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store

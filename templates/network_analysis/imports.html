@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Network imports{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Investigate</div>
+  <h1>Network imports</h1>
+  <p>Every imported Nmap XML and PCAP file. Imports are never deleted through EagleEye.</p>
+</div>
+<section class="panel">
+  <form class="toolbar" method="get">
+    <div class="field"><label for="f-q">Search</label><input class="ee-input" id="f-q" name="q" value="{{ q }}" placeholder="ID, name, hash, case ref"></div>
+    <div class="field"><label for="f-k">Kind</label>
+      <select class="ee-select" id="f-k" name="kind"><option value="">Any</option><option value="nmap"{% if kind == 'nmap' %} selected{% endif %}>Nmap XML</option><option value="pcap"{% if kind == 'pcap' %} selected{% endif %}>PCAP</option></select></div>
+    <button class="btn-ee" type="submit">Filter</button>
+  </form>
+  {% include "network_analysis/_import_table.html" with items=page %}
+  {% include "partials/pagination.html" with extra_query=pager_query %}
+</section>
+{% endblock %}

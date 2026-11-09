@@ -1,0 +1,10 @@
+<article class="finding f-{{ f.severity_slug }}">
+  <h3><span class="sev sev-{{ f.severity_slug }}">{{ f.severity_label }}</span> {{ f.title }}</h3>
+  <dl>
+    <dt>What</dt><dd>{{ f.description }}</dd>
+    <dt>Impact</dt><dd>{{ f.impact }}</dd>
+    <dt>Fix</dt><dd>{{ f.remediation }}</dd>
+    <dt>Evidence</dt><dd><code class="codebox">{{ f.evidence }}</code></dd>
+    <dt>Reproduce</dt><dd><code class="codebox">{{ f.reproduce }}</code></dd>
+  </dl>
+</article>

@@ -1,0 +1,159 @@
+Creating test database for alias 'default'...
+..2026-11-03 01:33:33,966 WARNING django.request: Too Many Requests: /accounts/login/
+.2026-11-03 01:33:35,236 WARNING django.security.csrf: Forbidden (CSRF cookie not set.): /accounts/login/
+..2026-11-03 01:33:37,997 WARNING django.request: Method Not Allowed (GET): /accounts/logout/
+....2026-11-03 01:33:44,923 WARNING django.request: Forbidden (Permission denied): /accounts/users/
+Traceback (most recent call last):
+  File "C:\Users\HP\Desktop\Project\EagleEye\venv\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\HP\Desktop\Project\EagleEye\venv\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HP\Desktop\Project\EagleEye\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HP\Desktop\Project\EagleEye\apps\accounts\roles.py", line 56, in wrapper
+    raise PermissionDenied
+django.core.exceptions.PermissionDenied
+2026-11-03 01:33:44,927 WARNING django.request: Forbidden (Permission denied): /audit/
+Traceback (most recent call last):
+  File "C:\Users\HP\Desktop\Project\EagleEye\venv\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\HP\Desktop\Project\EagleEye\venv\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HP\Desktop\Project\EagleEye\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HP\Desktop\Project\EagleEye\apps\accounts\roles.py", line 56, in wrapper
+    raise PermissionDenied
+django.core.exceptions.PermissionDenied
+2026-11-03 01:33:44,929 WARNING django.request: Forbidden (Permission denied): /settings/
+Traceback (most recent call last):
+  File "C:\Users\HP\Desktop\Project\EagleEye\venv\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\HP\Desktop\Project\EagleEye\venv\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HP\Desktop\Project\EagleEye\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HP\Desktop\Project\EagleEye\apps\accounts\roles.py", line 56, in wrapper
+    raise PermissionDenied
+django.core.exceptions.PermissionDenied
+2026-11-03 01:33:44,934 WARNING django.request: Forbidden (Permission denied): /accounts/users/
+Traceback (most recent call last):
+  File "C:\Users\HP\Desktop\Project\EagleEye\venv\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\HP\Desktop\Project\EagleEye\venv\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HP\Desktop\Project\EagleEye\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HP\Desktop\Project\EagleEye\apps\accounts\roles.py", line 56, in wrapper
+    raise PermissionDenied
+django.core.exceptions.PermissionDenied
+2026-11-03 01:33:44,937 WARNING django.request: Forbidden (Permission denied): /audit/
+Traceback (most recent call last):
+  File "C:\Users\HP\Desktop\Project\EagleEye\venv\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\HP\Desktop\Project\EagleEye\venv\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HP\Desktop\Project\EagleEye\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HP\Desktop\Project\EagleEye\apps\accounts\roles.py", line 56, in wrapper
+    raise PermissionDenied
+django.core.exceptions.PermissionDenied
+2026-11-03 01:33:44,939 WARNING django.request: Forbidden (Permission denied): /settings/
+Traceback (most recent call last):
+  File "C:\Users\HP\Desktop\Project\EagleEye\venv\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\HP\Desktop\Project\EagleEye\venv\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HP\Desktop\Project\EagleEye\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HP\Desktop\Project\EagleEye\apps\accounts\roles.py", line 56, in wrapper
+    raise PermissionDenied
+django.core.exceptions.PermissionDenied
+..F..2026-11-03 01:33:52,402 WARNING django.request: Method Not Allowed (GET): /accounts/users/2/role/
+...2026-11-03 01:33:56,490 WARNING django.request: Forbidden (Permission denied): /accounts/users/2/role/
+Traceback (most recent call last):
+  File "C:\Users\HP\Desktop\Project\EagleEye\venv\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\HP\Desktop\Project\EagleEye\venv\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HP\Desktop\Project\EagleEye\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HP\Desktop\Project\EagleEye\apps\accounts\roles.py", line 56, in wrapper
+    raise PermissionDenied
+django.core.exceptions.PermissionDenied
+.........2026-11-03 01:33:59,852 ERROR apps.audit.services: Failed to write audit event bad
+Traceback (most recent call last):
+  File "C:\Users\HP\Desktop\Project\EagleEye\apps\audit\services.py", line 19, in log_event
+    ip = request.META.get("REMOTE_ADDR") if request is not None else None
+         ^^^^^^^^^^^^
+AttributeError: 'object' object has no attribute 'META'
+..F........2026-11-03 01:34:06,728 WARNING django.request: Not Found: /modules/nope/
+..F2026-11-03 01:34:06,731 WARNING django.request: Not Found: /definitely-missing/
+..2026-11-03 01:34:09,468 WARNING django.request: Not Found: /scanner/history/compare/
+....2026-11-03 01:34:18,148 WARNING django.request: Forbidden (Permission denied): /scanner/
+Traceback (most recent call last):
+  File "C:\Users\HP\Desktop\Project\EagleEye\venv\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\HP\Desktop\Project\EagleEye\venv\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\HP\Desktop\Project\EagleEye\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\HP\Desktop\Project\EagleEye\apps\scanner\views.py", line 31, in home
+    raise PermissionDenied
+django.core.exceptions.PermissionDenied
+..2026-11-03 01:34:22,237 WARNING django.security.csrf: Forbidden (CSRF cookie not set.): /scanner/
+.....2026-11-03 01:34:32,884 WARNING django.request: Not Found: /scanner/history/1/report/exe/
+.2026-11-03 01:34:35,402 WARNING django.request: Bad Request: /scanner/
+.2026-11-03 01:34:37,486 ERROR django.request: Service Unavailable: /scanner/
+...2026-11-03 01:34:43,641 WARNING django.request: Bad Request: /scanner/
+2026-11-03 01:34:43,646 WARNING django.request: Bad Request: /scanner/
+2026-11-03 01:34:43,650 WARNING django.request: Bad Request: /scanner/
+2026-11-03 01:34:43,655 WARNING django.request: Bad Request: /scanner/
+.2026-11-03 01:34:45,701 WARNING django.request: Too Many Requests: /scanner/
+......2026-11-03 01:35:00,059 ERROR apps.scanner.services: Unexpected scanner failure for scan 1
+Traceback (most recent call last):
+  File "C:\Users\HP\Desktop\Project\EagleEye\apps\scanner\services.py", line 86, in execute_scan
+    outcome = run_scan(raw_url, policy_from_settings())
+  File "C:\Users\HP\AppData\Local\Programs\Python\Python314\Lib\unittest\mock.py", line 1175, in __call__
+    return self._mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\AppData\Local\Programs\Python\Python314\Lib\unittest\mock.py", line 1179, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\AppData\Local\Programs\Python\Python314\Lib\unittest\mock.py", line 1234, in _execute_mock_call
+    raise effect
+RuntimeError: secret /srv/path
+.......................................................s.......
+======================================================================
+FAIL: test_sidebar_hides_admin_items_from_non_admins (apps.accounts.tests.test_auth.RolePermissionTests.test_sidebar_hides_admin_items_from_non_admins)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\HP\Desktop\Project\EagleEye\apps\accounts\tests\test_auth.py", line 99, in test_sidebar_hides_admin_items_from_non_admins
+    self.assertNotIn(reverse("accounts:users"), html)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: '/accounts/users/' unexpectedly found in '<!doctype html>\n<html lang="en">\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <meta name="color-scheme" content="dark">\n  <title>Dashboard · EagleEye</title>\n  \n  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">\n  <link rel="stylesheet" href="/static/css/eagleeye.css">\n  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 64 64\'%3E%3Cpath d=\'M3 32C11 18 21 12 32 12s21 6 29 20c-8 14-18 20-29 20S11 46 3 32z\' fill=\'%2304080f\' stroke=\'%2322e5ff\' stroke-width=\'4\'/%3E%3Ccircle cx=\'32\' cy=\'32\' r=\'8\' fill=\'%2322e5ff\'/%3E%3C/svg%3E">\n</head>\n<body class="ee">\n  <a class="skip-link" href="#main">Skip to content</a>\n  <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">\n  <defs>\n    <symbol id="logo-eye" viewBox="0 0 64 64">\n      <path d="M3 32C11 18 21 12 32 12s21 6 29 20c-8 14-18 20-29 20S11 46 3 32z" fill="none" stroke="#22e5ff" stroke-width="2.2" stroke-linejoin="round"/>\n      <circle cx="32" cy="32" r="11" fill="none" stroke="#3dffb0" stroke-width="2"/>\n      <circle cx="32" cy="32" r="4.5" fill="#22e5ff"/>\n      <path d="M32 4v6M32 54v6M10 12l3 4M54 12l-3 4" stroke="#22e5ff" stroke-width="1.6" stroke-linecap="round" opacity=".7"/>\n    </symbol>\n    <symbol id="i-dashboard" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7.5" height="9" rx="1"/><rect x="13.5" y="3" width="7.5" height="5" rx="1"/><rect x="13.5" y="11" width="7.5" height="10" rx="1"/><rect x="3" y="15" width="7.5" height="6" rx="1"/></symbol>\n    <symbol id="i-scanner" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12l6-6"/></symbol>\n    <symbol id="i-history" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></symbol>\n    <symbol id="i-forensics" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21M8 10.5h5M10.5 8v5"/></symbol>\n    <symbol id="i-vault" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M12 8.5v-1M12 16.5v1M8.5 12h-1M16.5 12h1"/></symbol>\n    <symbol id="i-network" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M12 7.5v4.5M12 12l-5.5 5M12 12l5.5 5"/></symbol>\n    <symbol id="i-cases" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M3 13h18"/></symbol>\n    <symbol id="i-reports" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/></symbol>\n    <symbol id="i-audit" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/><circle cx="19" cy="18" r="2"/></symbol>\n    <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><path d="M16 4.8a3.5 3.5 0 0 1 0 6.4M18 14.8c1.8.7 3 2.3 3.5 5.2"/></symbol>\n    <symbol id="i-settings" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></symbol>\n    <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></symbol>\n    <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>\n  </defs>\n</svg>\n\n  \n<div class="ee-shell">\n  <aside class="ee-sidebar" id="sidebar" aria-label="Primary">\n    <a class="brand" href="/" aria-label="EagleEye home">\n      <svg aria-hidden="true"><use href="#logo-eye"/></svg>\n      <span><b>EagleEye</b><small>Threat · Evidence · Defense</small></span>\n    </a>\n    <nav>\n      \n        <div class="nav-title">Command</div>\n        <ul class="nav-list">\n          \n          <li>\n            <a class="nav-link active" href="/" aria-current="page">\n              <svg aria-hidden="true"><use href="#i-dashboard"/></svg>\n              <span>Dashboard</span>\n              \n            </a>\n          </li>\n          \n        </ul>\n      \n        <div class="nav-title">Operate</div>\n        <ul class="nav-list">\n          \n          <li>\n            <a class="nav-link" href="/scanner/">\n              <svg aria-hidden="true"><use href="#i-scanner"/></svg>\n              <span>Vulnerability Scanner</span>\n              \n            </a>\n          </li>\n          \n          <li>\n            <a class="nav-link" href="/scanner/history/">\n              <svg aria-hidden="true"><use href="#i-history"/></svg>\n              <span>Scan History</span>\n              \n            </a>\n          </li>\n          \n        </ul>\n      \n        <div class="nav-title">Investigate</div>\n        <ul class="nav-list">\n          \n          <li>\n            <a class="nav-link" href="/modules/forensics/">\n              <svg aria-hidden="true"><use href="#i-forensics"/></svg>\n              <span>Digital Forensics</span>\n              <span class="nav-tag" title="Arrives in phase 3">P3</span>\n            </a>\n          </li>\n          \n          <li>\n            <a class="nav-link" href="/modules/evidence-vault/">\n              <svg aria-hidden="true"><use href="#i-vault"/></svg>\n              <span>Evidence Vault</span>\n              <span class="nav-tag" title="Arrives in phase 3">P3</span>\n            </a>\n          </li>\n          \n          <li>\n            <a class="nav-link" href="/modules/network/">\n              <svg aria-hidden="true"><use href="#i-network"/></svg>\n              <span>Network Analysis</span>\n              <span class="nav-tag" title="Arrives in phase 4">P4</span>\n            </a>\n          </li>\n          \n          <li>\n            <a class="nav-link" href="/modules/cases/">\n              <svg aria-hidden="true"><use href="#i-cases"/></svg>\n              <span>Investigation Cases</span>\n              <span class="nav-tag" title="Arrives in phase 5">P5</span>\n            </a>\n          </li>\n          \n        </ul>\n      \n        <div class="nav-title">Report &amp; Govern</div>\n        <ul class="nav-list">\n          \n          <li>\n            <a class="nav-link" href="/modules/reports/">\n              <svg aria-hidden="true"><use href="#i-reports"/></svg>\n              <span>Reports</span>\n              <span class="nav-tag" title="Arrives in phase 5">P5</span>\n            </a>\n          </li>\n          \n        </ul>\n      \n    </nav>\n    <div class="sidebar-foot">\n      <div class="eyebrow" style="font-size:10px">Operator</div>\n      <div class="who">rev</div>\n      <div class="mb-2"><span class="badge-ee role">Read-only reviewer</span></div>\n      <form method="post" action="/accounts/logout/">\n        <input type="hidden" name="csrfmiddlewaretoken" value="2P06iDGMaOXGuOFNncS3SGuZ95rzi1csdaN9Iegk66afa2OGVvvsPG9FeystNpUo">\n        <button type="submit" class="btn-ee small" style="width:100%">Sign out</button>\n      </form>\n    </div>\n  </aside>\n\n  <div class="ee-main">\n    <header class="topbar">\n      <button type="button" id="menu-toggle" class="btn-ee small menu-btn" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">\n        <svg width="18" height="18" stroke="currentColor" aria-hidden="true"><use href="#i-menu"/></svg>\n      </button>\n      <span class="status-pill"><span class="dot"></span> System online</span>\n      <span class="spacer"></span>\n      <span class="clock d-none d-sm-inline" id="utc-clock" aria-label="Current UTC time"></span>\n    </header>\n    <main class="content" id="main">\n      \n      \n<section class="panel hero" aria-labelledby="hero-title">\n  <div>\n    <div class="eyebrow">Command center</div>\n    <h1 id="hero-title">Welcome, <span>rev</span></h1>\n    <p>EagleEye is online. Phase&nbsp;1 delivers the secure foundation: authentication, role-based access, the audit trail and this command center. Assessment, forensics and case modules arrive in later phases.</p>\n    <div class="hero-meta">\n      <div><b>5 / 10</b>modules online</div>\n      <div><b>3</b>operators</div>\n      <div><b>1</b>audit events · 24h</div>\n      <div><b>Phase 3</b>up next</div>\n    </div>\n  </div>\n  <div class="radar" aria-hidden="true"><i style="top:24%;left:66%"></i><i style="top:62%;left:28%"></i><i style="top:72%;left:70%"></i></div>\n</section>\n\n<section aria-label="Key metrics">\n  <div class="grid stats">\n    \n    <div class="panel stat">\n      <div class="label">Assessments</div>\n      <div class="value">0</div>\n      <div class="sub">0 target(s) scanned</div>\n    </div>\n    \n    <div class="panel stat">\n      <div class="label">Findings</div>\n      <div class="value">0</div>\n      <div class="sub">latest scan of each target</div>\n    </div>\n    \n    <div class="panel stat pending">\n      <div class="label">Open cases</div>\n      <div class="value" aria-label="Not yet available">— —</div>\n      <div class="sub">Under investigation · available in phase 5</div>\n    </div>\n    \n    <div class="panel stat pending">\n      <div class="label">Evidence items</div>\n      <div class="value" aria-label="Not yet available">— —</div>\n      <div class="sub">In the vault · available in phase 3</div>\n    </div>\n    \n  </div>\n</section>\n\n<section class="grid two">\n  <div class="panel" aria-labelledby="act-h">\n    <div class="panel-head"><h2 id="act-h">Audit activity · last 7 days</h2><span class="mono muted">1 events</span></div>\n    \n      <div class="bars" role="img" aria-label="Audit events per day for the last seven days">\n        \n        <div class="bar"><span class="n">0</span><div class="col" style="height:0%"></div><span class="d">Wed</span></div>\n        \n        <div class="bar"><span class="n">0</span><div class="col" style="height:0%"></div><span class="d">Thu</span></div>\n        \n        <div class="bar"><span class="n">0</span><div class="col" style="height:0%"></div><span class="d">Fri</span></div>\n        \n        <div class="bar"><span class="n">0</span><div class="col" style="height:0%"></div><span class="d">Sat</span></div>\n        \n        <div class="bar"><span class="n">0</span><div class="col" style="height:0%"></div><span class="d">Sun</span></div>\n        \n        <div class="bar"><span class="n">0</span><div class="col" style="height:0%"></div><span class="d">Mon</span></div>\n        \n        <div class="bar"><span class="n">1</span><div class="col" style="height:100%"></div><span class="d">Tue</span></div>\n        \n      </div>\n    \n  </div>\n\n  <div class="panel" aria-labelledby="sev-h">\n    <div class="panel-head"><h2 id="sev-h">Findings by severity</h2></div>\n    \n    <div class="empty"><b>No scans yet</b>Run an assessment in the scanner and its findings will be charted here.</div>\n    \n  </div>\n</section>\n\n<section class="panel" aria-labelledby="scan-h">\n  <div class="panel-head"><h2 id="scan-h">Recent scans</h2><a class="btn-ee small" href="/scanner/history/">History</a></div>\n  \n<div class="empty"><b>No assessments yet</b>Saved scans appear here.</div>\n\n\n</section>\n\n<section aria-labelledby="mod-h">\n  <div class="panel-head"><h2 id="mod-h" class="eyebrow">Module overview</h2></div>\n  <div class="grid modules">\n    \n    <a class="panel module-card" href="/scanner/">\n      <div class="module-top">\n        <span class="ico"><svg aria-hidden="true" fill="none"><use href="#i-scanner"/></svg></span>\n        <span class="badge-ee ready">Online</span>\n      </div>\n      <h3>Vulnerability Scanner</h3>\n      <p>Authorized web-target assessment: HTTPS, security headers, cookies, redirects and TLS.</p>\n    </a>\n    \n    <a class="panel module-card" href="/scanner/history/">\n      <div class="module-top">\n        <span class="ico"><svg aria-hidden="true" fill="none"><use href="#i-history"/></svg></span>\n        <span class="badge-ee ready">Online</span>\n      </div>\n      <h3>Scan History</h3>\n      <p>Stored scan results with side-by-side comparison of previous runs.</p>\n    </a>\n    \n    <a class="panel module-card" href="/modules/forensics/">\n      <div class="module-top">\n        <span class="ico"><svg aria-hidden="true" fill="none"><use href="#i-forensics"/></svg></span>\n        <span class="badge-ee planned">Phase 3</span>\n      </div>\n      <h3>Digital Forensics</h3>\n      <p>Hashing, metadata extraction and integrity verification for authorized evidence files.</p>\n    </a>\n    \n    <a class="panel module-card" href="/modules/evidence-vault/">\n      <div class="module-top">\n        <span class="ico"><svg aria-hidden="true" fill="none"><use href="#i-vault"/></svg></span>\n        <span class="badge-ee planned">Phase 3</span>\n      </div>\n      <h3>Evidence Vault</h3>\n      <p>Evidence inventory with unique IDs, chain-of-custody notes and access control.</p>\n    </a>\n    \n    <a class="panel module-card" href="/modules/network/">\n      <div class="module-top">\n        <span class="ico"><svg aria-hidden="true" fill="none"><use href="#i-network"/></svg></span>\n        <span class="badge-ee planned">Phase 4</span>\n      </div>\n      <h3>Network Analysis</h3>\n      <p>Defensive analysis of imported Nmap XML and PCAP files from authorized lab networks.</p>\n    </a>\n    \n    <a class="panel module-card" href="/modules/cases/">\n      <div class="module-top">\n        <span class="ico"><svg aria-hidden="true" fill="none"><use href="#i-cases"/></svg></span>\n        <span class="badge-ee planned">Phase 5</span>\n      </div>\n      <h3>Investigation Cases</h3>\n      <p>Case and incident management tying together scans, evidence and findings.</p>\n    </a>\n    \n    <a class="panel module-card" href="/modules/reports/">\n      <div class="module-top">\n        <span class="ico"><svg aria-hidden="true" fill="none"><use href="#i-reports"/></svg></span>\n        <span class="badge-ee planned">Phase 5</span>\n      </div>\n      <h3>Reports</h3>\n      <p>Professional reports generated from real saved data.</p>\n    </a>\n    \n    <a class="panel module-card" href="/audit/">\n      <div class="module-top">\n        <span class="ico"><svg aria-hidden="true" fill="none"><use href="#i-audit"/></svg></span>\n        <span class="badge-ee ready">Online</span>\n      </div>\n      <h3>Audit Logs</h3>\n      <p>Append-only history of sign-ins, user changes and (later) evidence actions.</p>\n    </a>\n    \n    <a class="panel module-card" href="/accounts/users/">\n      <div class="module-top">\n        <span class="ico"><svg aria-hidden="true" fill="none"><use href="#i-users"/></svg></span>\n        <span class="badge-ee ready">Online</span>\n      </div>\n      <h3>User Management</h3>\n      <p>Create users and assign administrator, investigator or reviewer roles.</p>\n    </a>\n    \n    <a class="panel module-card" href="/settings/">\n      <div class="module-top">\n        <span class="ico"><svg aria-hidden="true" fill="none"><use href="#i-settings"/></svg></span>\n        <span class="badge-ee ready">Online</span>\n      </div>\n      <h3>Settings</h3>\n      <p>Read-only view of the security configuration currently in effect.</p>\n    </a>\n    \n  </div>\n</section>\n\n<section class="panel" aria-labelledby="ev-h">\n  <div class="panel-head">\n    <h2 id="ev-h">Recent audit events</h2>\n    \n  </div>\n  \n  <ul class="feed">\n    \n    <li><time datetime="2026-11-03T00:33:48.973427+00:00">Nov 03 00:33:48</time>\n      <span><code>auth.login</code> by <b>rev</b> \u2192 rev</span></li>\n    \n  </ul>\n  \n</section>\n\n    </main>\n  </div>\n</div>\n\n  <script src="/static/js/eagleeye.js" defer></script>\n</body>\n</html>\n'
+
+======================================================================
+FAIL: test_activity_series_counts_today (apps.core.tests.test_core.DashboardTests.test_activity_series_counts_today)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\HP\Desktop\Project\EagleEye\apps\core\tests\test_core.py", line 51, in test_activity_series_counts_today
+    self.assertEqual(series[-1]["count"], 2)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 3 != 2
+
+======================================================================
+FAIL: test_urls (apps.core.tests.test_core.ModuleCatalogueTests.test_urls)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\HP\Desktop\Project\EagleEye\apps\core\tests\test_core.py", line 22, in test_urls
+    self.assertFalse(scanner.is_ready)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 128 tests in 101.496s
+
+FAILED (failures=3, skipped=1)
+Destroying test database for alias 'default'...
+Found 128 test(s).
+System check identified no issues (0 silenced).

@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Scan #{{ scan.pk }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Scan #{{ scan.pk }} · {{ scan.created_at|date:"Y-m-d H:i" }} UTC</div>
+  <h1 style="text-transform:none;letter-spacing:.04em;overflow-wrap:anywhere">{{ scan.normalized_url|default:scan.target_url }}</h1>
+  <p><span class="badge-ee {% if scan.status == 'completed' %}ready{% else %}planned{% endif %}">{{ scan.get_status_display }}</span>
+     {% if scan.error_message %}&nbsp; {{ scan.error_message }}{% endif %}</p>
+</div>
+
+<div class="dl-row">
+  <a class="btn-ee small" href="{% url 'scanner:report' scan.pk 'html' %}">HTML report</a>
+  <a class="btn-ee small" href="{% url 'scanner:report' scan.pk 'json' %}">JSON report</a>
+  <a class="btn-ee small" href="{% url 'scanner:report' scan.pk 'pdf' %}">PDF report</a>
+  {% if can_run %}<a class="btn-ee small" href="{% url 'scanner:home' %}?url={{ scan.target_url|urlencode }}">Re-scan</a>{% endif %}
+  <a class="btn-ee small" href="{% url 'scanner:history' %}">Back to history</a>
+</div>
+
+{% if scan.status == 'blocked' %}
+<div class="panel"><div class="empty"><b>Target refused by policy</b>No request was sent to the target. {{ scan.error_message }}</div></div>
+{% elif scan.status == 'failed' and not scan.hops %}
+<div class="panel"><div class="empty"><b>Scan did not complete</b>{{ scan.error_message }}</div></div>
+{% else %}
+<section class="grid two">
+  <div class="panel">
+    <div class="panel-head"><h2>Findings ({{ scan.findings_count }})</h2></div>
+    <div class="stack">
+      {% for f in findings %}{% include "scanner/_finding.html" %}{% empty %}
+      <div class="empty"><b>No findings</b>None of the checks that ran reported a problem. This does not prove the site is secure.</div>
+      {% endfor %}
+    </div>
+  </div>
+  <div style="display:grid;gap:18px;align-content:start">
+    <div class="panel">
+      <div class="panel-head"><h2>Severity</h2></div>
+      <div class="sevbars">
+        {% for label, n in counts %}
+        <div class="sevbar"><span>{{ label }}</span>
+          <span class="track"><span class="fill sev-{% if label == 'Informational' %}info{% else %}{{ label|lower }}{% endif %}" style="display:block;width:{% if scan.findings_count %}{% widthratio n scan.findings_count 100 %}{% else %}0{% endif %}%"></span></span>
+          <span class="num">{{ n }}</span></div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Result</h2></div>
+      <div class="kv">
+        <div>Final HTTP status</div><div>{{ scan.final_status_code|default:"—" }}</div>
+        <div>Final URL</div><div style="overflow-wrap:anywhere">{{ scan.final_url|default:"—" }}</div>
+        <div>Response time</div><div>{{ scan.response_time_ms|default_if_none:"—" }}{% if scan.response_time_ms is not None %} ms{% endif %}</div>
+        <div>Scan duration</div><div>{{ scan.duration_ms|default_if_none:"—" }}{% if scan.duration_ms is not None %} ms{% endif %}</div>
+        <div>Scanned by</div><div>{{ scan.created_by.username|default:"—" }}</div>
+        <div>Authorization</div><div>{{ scan.authorization_note|default:"confirmed at submission" }}</div>
+      </div>
+    </div>
+    {% if scan.tls %}
+    <div class="panel">
+      <div class="panel-head"><h2>TLS</h2></div>
+      <div class="kv">
+        <div>Version</div><div>{{ scan.tls.version }}</div>
+        <div>Cipher</div><div>{{ scan.tls.cipher }}</div>
+        <div>Certificate</div><div class="{% if not scan.tls.verified %}warn{% endif %}">{% if scan.tls.verified %}verified{% else %}NOT verified: {{ scan.tls.error }}{% endif %}</div>
+        {% if scan.tls.days_left is not None %}<div>Expires in</div><div>{{ scan.tls.days_left }} days</div>{% endif %}
+        {% if scan.tls.issuer %}<div>Issuer</div><div style="overflow-wrap:anywhere">{{ scan.tls.issuer }}</div>{% endif %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel-head"><h2>Request chain</h2></div>
+  <div class="table-wrap"><table class="ee-table">
+    <thead><tr><th>#</th><th>Status</th><th>URL</th><th>Connected IP</th><th>Time</th></tr></thead>
+    <tbody>{% for h in scan.hops %}<tr><td class="mono">{{ forloop.counter }}</td><td class="mono">{{ h.status }}</td><td style="overflow-wrap:anywhere">{{ h.url }}</td><td class="mono">{{ h.ip }}</td><td class="mono">{{ h.elapsed_ms }} ms</td></tr>{% endfor %}</tbody>
+  </table></div>
+</section>
+
+<section class="panel">
+  <div class="panel-head"><h2>Checks performed ({{ scan.checks|length }})</h2></div>
+  <div class="table-wrap"><table class="ee-table">
+    <thead><tr><th>Check</th><th>Result</th><th>Detail</th></tr></thead>
+    <tbody>{% for c in scan.checks %}<tr><td>{{ c.title }}</td><td><span class="res res-{{ c.outcome }}">{{ c.outcome|upper }}</span></td><td class="muted">{{ c.detail }}</td></tr>{% endfor %}</tbody>
+  </table></div>
+</section>
+{% endif %}
+{% endblock %}

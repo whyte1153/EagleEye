@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}User management{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Administration</div>
+  <h1>User management</h1>
+  <p>Create operators and assign roles. New accounts default to read-only until a role is chosen. Role changes are written to the audit log.</p>
+</div>
+<section class="grid two">
+  <div class="panel">
+    <div class="panel-head"><h2>Operators</h2><span class="mono muted">{{ page.paginator.count }} total</span></div>
+    <div class="table-wrap">
+      <table class="ee-table">
+        <thead><tr><th>Username</th><th>Email</th><th>Role</th><th>Change role</th></tr></thead>
+        <tbody>
+        {% for u in page %}
+          <tr>
+            <td><b>{{ u.username }}</b>{% if u.is_superuser %} <span class="badge-ee ready">superuser</span>{% endif %}</td>
+            <td class="muted">{{ u.email|default:"—" }}</td>
+            <td><span class="badge-ee role">{{ u.profile.get_role_display|default:"Reviewer" }}</span></td>
+            <td>
+              {% if u.is_superuser or u.pk == user.pk %}
+                <span class="muted">—</span>
+              {% else %}
+              <form class="inline-form" method="post" action="{% url 'accounts:change_role' u.pk %}">
+                {% csrf_token %}
+                <label class="visually-hidden" for="role-{{ u.pk }}">Role for {{ u.username }}</label>
+                <select class="ee-select" id="role-{{ u.pk }}" name="role">
+                  {% for value, label in role_choices %}<option value="{{ value }}"{% if u.profile.role == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+                </select>
+                <button class="btn-ee small" type="submit">Apply</button>
+              </form>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% include "partials/pagination.html" %}
+  </div>
+
+  <div style="display:grid;gap:18px;align-content:start">
+    <div class="panel">
+      <div class="panel-head"><h2>New operator</h2></div>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="alert-ee error">{{ form.non_field_errors }}</div>{% endif %}
+        {% for field in form %}
+        <div class="field">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {{ field.errors }}
+          {% if field.help_text %}<div class="help">{{ field.help_text|safe }}</div>{% endif %}
+        </div>
+        {% endfor %}
+        <button class="btn-ee solid" type="submit">Create operator</button>
+      </form>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Roles</h2></div>
+      <div class="kv" style="grid-template-columns:1fr">
+        {% for label, desc in role_descriptions %}<div style="color:#fff">{{ label }}</div><div class="muted">{{ desc }}</div>{% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

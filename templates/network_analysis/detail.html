@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}{{ ni.import_id }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Network analysis · {{ ni.get_kind_display }}</div>
+  <h1 class="mono">{{ ni.import_id }}</h1>
+  <p style="overflow-wrap:anywhere">{{ ni.original_filename }}{% if ni.description %} — {{ ni.description }}{% endif %}</p>
+</div>
+
+<div class="alert-ee info" role="note">{{ caveat }}</div><br>
+
+{% if ni.warnings %}
+<div class="alert-ee error" role="alert"><b>Import limits or skipped data:</b>
+  <ul>{% for w in ni.warnings %}<li>{{ w }}</li>{% endfor %}</ul></div><br>
+{% endif %}
+
+<section class="panel">
+  <div class="panel-head"><h2>Import details</h2></div>
+  <div class="kv">
+    <div>Imported by</div><div>{{ ni.imported_by.get_username|default:"—" }} at {{ ni.imported_at|date:"Y-m-d H:i" }} UTC</div>
+    <div>File size</div><div class="mono">{{ ni.size|filesizeformat }} ({{ ni.size }} bytes)</div>
+    <div>SHA-256</div><div class="mono" style="overflow-wrap:anywhere">{{ ni.sha256 }}</div>
+    {% if ni.case_reference %}<div>Case reference</div><div>{{ ni.case_reference }}</div>{% endif %}
+    <div>Highest indicator</div><div><span class="sev sev-{{ max_slug }}">{{ max_label }}</span></div>
+  </div>
+</section>
+
+{% if ni.kind == 'nmap' %}
+<section class="grid stats" style="margin-top:18px">
+  <div class="panel stat"><div class="label">Hosts</div><div class="value">{{ ni.summary.hosts }}</div><div class="sub">{{ ni.summary.hosts_up }} up</div></div>
+  <div class="panel stat"><div class="label">Open ports</div><div class="value">{{ ni.summary.open_ports }}</div><div class="sub">across all hosts</div></div>
+  <div class="panel stat"><div class="label">Flagged ports</div><div class="value">{{ ni.summary.flagged_ports }}</div><div class="sub">matched a rule</div></div>
+  <div class="panel stat"><div class="label">Nmap</div><div class="value" style="font-size:18px">{{ scanner.version|default:"—" }}</div><div class="sub">{{ scanner.started|default:"" }}</div></div>
+</section>
+{% if scanner.args %}<p class="muted mono" style="overflow-wrap:anywhere">Command recorded in file: {{ scanner.args }}</p>{% endif %}
+
+<section class="panel" style="margin-top:18px">
+  <div class="panel-head"><h2>Services ({{ total_rows }})</h2></div>
+  <form class="toolbar" method="get">
+    <div class="field"><label for="f-q">Search</label><input class="ee-input" id="f-q" name="q" value="{{ q }}" placeholder="host, service, product, rule"></div>
+    <div class="field"><label for="f-p">Port</label><input class="ee-input" id="f-p" name="port" value="{{ port }}" inputmode="numeric" style="width:90px"></div>
+    <div class="field"><label for="f-s">Minimum severity</label>
+      <select class="ee-select" id="f-s" name="min_sev"><option value="">Any</option>
+        <option value="0"{% if min_sev == '0' %} selected{% endif %}>Info</option><option value="1"{% if min_sev == '1' %} selected{% endif %}>Low</option>
+        <option value="2"{% if min_sev == '2' %} selected{% endif %}>Medium</option><option value="3"{% if min_sev == '3' %} selected{% endif %}>High</option></select></div>
+    <div class="field"><label for="f-a">Port state</label>
+      <select class="ee-select" id="f-a" name="all"><option value="">Open only</option><option value="1"{% if show_all %} selected{% endif %}>All states</option></select></div>
+    <button class="btn-ee" type="submit">Filter</button>
+  </form>
+  <div class="dl-row" style="margin-bottom:14px">
+    <a class="btn-ee small" href="{% url 'network_analysis:export' ni.import_id 'csv' %}?{{ pager_query }}">Ports CSV</a>
+    <a class="btn-ee small" href="{% url 'network_analysis:export' ni.import_id 'json' %}?{{ pager_query }}">JSON</a>
+  </div>
+  {% if page %}
+  <div class="table-wrap"><table class="ee-table">
+    <thead><tr><th>Host</th><th>Port</th><th>State</th><th>Service</th><th>Version</th><th>Indicator</th></tr></thead>
+    <tbody>
+    {% for r in page %}
+      <tr>
+        <td class="mono">{{ r.address }}{% if r.hostnames %}<div class="muted">{{ r.hostnames }}</div>{% endif %}</td>
+        <td class="mono">{{ r.port }}/{{ r.protocol }}</td>
+        <td>{{ r.state }}</td>
+        <td>{{ r.service|default:"—" }}</td>
+        <td>{{ r.product }} {{ r.version }}</td>
+        <td>{% if r.severity >= 0 %}<span class="sev sev-{{ r.sev_slug }}">{{ r.sev_label }}</span> <b>{{ r.risk_title }}</b>
+          <div class="muted">{{ r.risk_reason }}</div><div class="muted"><i>Suggested:</i> {{ r.recommendation }}</div>{% else %}<span class="muted">—</span>{% endif %}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+  {% include "partials/pagination.html" with extra_query=pager_query %}
+  {% else %}<div class="empty"><b>No matching ports</b>Try clearing the filters.</div>{% endif %}
+</section>
+
+{% else %}
+<section class="grid stats" style="margin-top:18px">
+  <div class="panel stat"><div class="label">Packets</div><div class="value">{{ ni.summary.packets }}</div><div class="sub">{{ ni.summary.bytes|filesizeformat }}</div></div>
+  <div class="panel stat"><div class="label">Flows</div><div class="value">{{ ni.summary.flows }}</div><div class="sub">TCP / UDP conversations</div></div>
+  <div class="panel stat"><div class="label">Unique IPs</div><div class="value">{{ ni.summary.unique_ips }}</div><div class="sub">endpoints seen</div></div>
+  <div class="panel stat"><div class="label">Duration</div><div class="value">{{ ni.summary.duration_s }}s</div><div class="sub">{{ ni.summary.first_seen }}</div></div>
+</section>
+
+<section class="panel" style="margin-top:18px">
+  <div class="panel-head"><h2>Indicators ({{ findings|length }})</h2></div>
+  {% if findings %}
+  <div class="table-wrap"><table class="ee-table">
+    <thead><tr><th>Severity</th><th>Indicator</th><th>Detail</th></tr></thead>
+    <tbody>{% for f in findings %}<tr><td><span class="sev sev-{{ f.sev_slug }}">{{ f.sev_label }}</span></td><td>{{ f.title }}</td>
+      <td>{{ f.detail }}<div class="muted"><i>Suggested:</i> {{ f.recommendation }}</div></td></tr>{% endfor %}</tbody>
+  </table></div>
+  {% else %}<div class="empty"><b>No indicators</b>No scan patterns or cleartext protocols matched the rules.</div>{% endif %}
+</section>
+
+<section class="grid two" style="margin-top:18px">
+  <div class="panel"><div class="panel-head"><h2>Protocols</h2></div>
+    <div class="table-wrap"><table class="ee-table"><thead><tr><th>Protocol</th><th>Packets</th></tr></thead>
+    <tbody>{% for p in protocols %}<tr><td>{{ p.name }}</td><td class="mono">{{ p.packets }}</td></tr>{% endfor %}</tbody></table></div></div>
+  <div class="panel"><div class="panel-head"><h2>DNS names</h2></div>
+    {% if dns %}<div class="table-wrap"><table class="ee-table"><thead><tr><th>Name</th><th>Queries</th></tr></thead>
+    <tbody>{% for d in dns %}<tr><td style="overflow-wrap:anywhere">{{ d.name }}</td><td class="mono">{{ d.count }}</td></tr>{% endfor %}</tbody></table></div>
+    {% else %}<div class="empty"><b>None</b>No DNS queries decoded.</div>{% endif %}</div>
+</section>
+
+<section class="panel" style="margin-top:18px">
+  <div class="panel-head"><h2>Top talkers</h2></div>
+  <div class="table-wrap"><table class="ee-table"><thead><tr><th>IP</th><th>Scope</th><th>Packets</th><th>Bytes</th></tr></thead>
+  <tbody>{% for t in talkers %}<tr><td class="mono">{{ t.ip }}</td><td>{{ t.scope }}</td><td class="mono">{{ t.packets }}</td><td class="mono">{{ t.bytes|filesizeformat }}</td></tr>{% endfor %}</tbody></table></div>
+</section>
+
+<section class="panel" style="margin-top:18px">
+  <div class="panel-head"><h2>Flows ({{ total_rows }})</h2></div>
+  <form class="toolbar" method="get">
+    <div class="field"><label for="f-q">Search</label><input class="ee-input" id="f-q" name="q" value="{{ q }}"></div>
+    <div class="field"><label for="f-i">IP address</label><input class="ee-input" id="f-i" name="ip" value="{{ ip }}"></div>
+    <div class="field"><label for="f-p">Port</label><input class="ee-input" id="f-p" name="port" value="{{ port }}" inputmode="numeric" style="width:90px"></div>
+    <div class="field"><label for="f-t">Protocol</label>
+      <select class="ee-select" id="f-t" name="proto"><option value="">Any</option><option value="TCP"{% if proto|upper == 'TCP' %} selected{% endif %}>TCP</option><option value="UDP"{% if proto|upper == 'UDP' %} selected{% endif %}>UDP</option></select></div>
+    <button class="btn-ee" type="submit">Filter</button>
+  </form>
+  <div class="dl-row" style="margin-bottom:14px">
+    <a class="btn-ee small" href="{% url 'network_analysis:export' ni.import_id 'csv' %}?{{ pager_query }}">Flows CSV</a>
+    <a class="btn-ee small" href="{% url 'network_analysis:export' ni.import_id 'json' %}?{{ pager_query }}">JSON</a>
+  </div>
+  {% if page %}
+  <div class="table-wrap"><table class="ee-table">
+    <thead><tr><th>Proto</th><th>Source</th><th>Destination</th><th>Packets</th><th>Bytes</th><th>TCP flags</th></tr></thead>
+    <tbody>{% for f in page %}<tr><td>{{ f.proto }}</td><td class="mono">{{ f.src }}:{{ f.sport }}</td><td class="mono">{{ f.dst }}:{{ f.dport }}</td>
+      <td class="mono">{{ f.packets }}</td><td class="mono">{{ f.bytes }}</td><td class="mono">{{ f.flags }}</td></tr>{% endfor %}</tbody>
+  </table></div>
+  {% include "partials/pagination.html" with extra_query=pager_query %}
+  {% else %}<div class="empty"><b>No matching flows</b>Try clearing the filters.</div>{% endif %}
+</section>
+{% endif %}
+{% endblock %}

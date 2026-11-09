@@ -1,0 +1,53 @@
+{% extends "base_public.html" %}
+{% block body %}
+<div class="ee-shell">
+  <aside class="ee-sidebar" id="sidebar" aria-label="Primary">
+    <a class="brand" href="{% url 'core:dashboard' %}" aria-label="EagleEye home">
+      <svg aria-hidden="true"><use href="#logo-eye"/></svg>
+      <span><b>EagleEye</b><small>Threat · Evidence · Defense</small></span>
+    </a>
+    <nav>
+      {% for section in nav_sections %}
+        <div class="nav-title">{{ section.title }}</div>
+        <ul class="nav-list">
+          {% for item in section.items %}
+          <li>
+            <a class="nav-link{% if item.active %} active{% endif %}" href="{{ item.url }}"{% if item.active %} aria-current="page"{% endif %}>
+              <svg aria-hidden="true"><use href="#i-{{ item.icon }}"/></svg>
+              <span>{{ item.label }}</span>
+              {% if item.planned %}<span class="nav-tag" title="Arrives in phase {{ item.phase }}">P{{ item.phase }}</span>{% endif %}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      {% endfor %}
+    </nav>
+    <div class="sidebar-foot">
+      <div class="eyebrow" style="font-size:10px">Operator</div>
+      <div class="who">{{ user.get_username }}</div>
+      <div class="mb-2"><span class="badge-ee role">{{ current_role_label }}</span></div>
+      <form method="post" action="{% url 'accounts:logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn-ee small" style="width:100%">Sign out</button>
+      </form>
+    </div>
+  </aside>
+
+  <div class="ee-main">
+    <header class="topbar">
+      <button type="button" id="menu-toggle" class="btn-ee small menu-btn" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
+        <svg width="18" height="18" stroke="currentColor" aria-hidden="true"><use href="#i-menu"/></svg>
+      </button>
+      <span class="status-pill"><span class="dot"></span> System online</span>
+      <span class="spacer"></span>
+      <span class="clock d-none d-sm-inline" id="utc-clock" aria-label="Current UTC time"></span>
+    </header>
+    <main class="content" id="main">
+      {% if messages %}
+        <div role="status">{% for message in messages %}<div class="alert-ee {{ message.tags }}">{{ message }}</div>{% endfor %}</div>
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}{{ module.name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Module · Phase {{ module.phase }}</div>
+  <h1>{{ module.name }}</h1>
+  <p>{{ module.summary }}</p>
+</div>
+<section class="grid two">
+  <div class="panel">
+    <div class="panel-head"><h2>Planned capabilities</h2><span class="badge-ee planned">Not yet built</span></div>
+    <ol class="steps">{% for f in module.feature_list %}<li>{{ f }}</li>{% endfor %}</ol>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h2>Status</h2></div>
+    <div class="empty"><b>Arrives in phase {{ module.phase }}</b>This module has no functionality yet, so there is nothing to run or configure. Nothing on this page is simulated.</div>
+    <p style="margin-top:16px"><a class="btn-ee" href="{% url 'core:dashboard' %}">Back to dashboard</a></p>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base_public.html" %}
+{% block title %}{{ code }} {{ title }}{% endblock %}
+{% block body %}
+<main class="errpage" id="main">
+  <div>
+    <div class="code">{{ code }}</div>
+    <h1 class="eyebrow" style="margin-top:14px">{{ title }}</h1>
+    <p class="muted">{{ message }}</p>
+    <p><a class="btn-ee" href="/">Return to dashboard</a></p>
+  </div>
+</main>
+{% endblock %}
